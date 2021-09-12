@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="Keep Team">
+    
+    <title>
+        
+            tomcat |
+        
+        Keep Theme
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Keep Theme
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">tomcat</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Keep Team</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-07-05 00:06:34
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p><img src="/images/tomcat.png" alt="asd"></p>
+<blockquote>
+<p>catalina 本身是一个成熟的软件，设计开发结构十分优雅，功能结构模块化。从 servlet 容器的功能角度看，catalian 可以划分为两大模块: connector 模块和 container 模块。</p>
+</blockquote>
+<p>这里 connector 的功能是将用户请求与 container 连接。 connector 的任务的是为每个接收到的 HTTP 请求建立 request 对象和 response 对象。然后，将处理过程交给 container 模块。 container 模块从 connector 模块中接收到 request 对象和 response 对象，并负责调用相应的 servlet 的服务方法。</p>
+<p>tomcat4 的连接器：等待 http 请求，创建 request 和 response 对象，调用org.apache.catalina.Container 的 invoke 方法将 request 对象和 response 对象传入 container。在 invoke 方法中， container 负责载入 servlet 类，调用其 call 方法，管理 session，记录日志等工作</p>
+<p>HttpConnector 里面不仅仅要设置container，还要维护了一个 HttpProcessor 的对象池，从而避免频繁的创建 HttpProcessor 对象，<br>每个 HttpProcessor 对象负责解析请求行和请求头，填充request对象，因此，每个 HttpProcessor 对象都关联一个 request 对象和 response 对象。HttpProcessor 的构造函数会调用 HttpConnector 的 createRequest 方法和 createResponse 方法</p>
+<p>一个比较简单的示例是下面这段代码<br>下面的代码展示了tomcat利用 HttpConnector 连接用户，利用 HttpProcessor 处理请求的一个较为完整的调用链</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public final class Bootstrap &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        HttpConnector connector = new HttpConnector();</span><br><span class="line">        SimpleContainer container = new SimpleContainer();</span><br><span class="line">        connector.setContainer(container);</span><br><span class="line">        try &#123;</span><br><span class="line">            connector.initialize();</span><br><span class="line"></span><br><span class="line">            //core!!!</span><br><span class="line">            connector.start();</span><br><span class="line"></span><br><span class="line">            // make the application wait until we press any key.</span><br><span class="line">            System.in.read();</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br></pre></td><td class="code"><pre><span class="line">public final class HttpConnector implements Connector, Lifecycle, Runnable &#123;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void start() throws LifecycleException &#123;</span><br><span class="line">        // Validate and update our current state</span><br><span class="line">        if (started)</span><br><span class="line">            throw new LifecycleException</span><br><span class="line">                (sm.getString(&quot;httpConnector.alreadyStarted&quot;));</span><br><span class="line">        threadName = &quot;HttpConnector[&quot; + port + &quot;]&quot;;</span><br><span class="line">        lifecycle.fireLifecycleEvent(START_EVENT, null);</span><br><span class="line">        started = true;</span><br><span class="line"></span><br><span class="line">        // 在这个方法里面，创建了一个线程 thread = new Thread(this, threadName);即把当前HttpConnector 作为Thread参数传入，然后启动该线程</span><br><span class="line">        threadStart();</span><br><span class="line"></span><br><span class="line">        // 按照配置好的minProcessors值，创建指定个数的 HttpProcessor</span><br><span class="line">        while (curProcessors &lt; minProcessors) &#123;</span><br><span class="line">            if ((maxProcessors &gt; 0) &amp;&amp; (curProcessors &gt;= maxProcessors))</span><br><span class="line">                break;</span><br><span class="line">            HttpProcessor processor = newProcessor();</span><br><span class="line">            recycle(processor);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //这里的run由上面的threadStart启动</span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            while (!stopped) &#123;</span><br><span class="line">                Socket socket = null;</span><br><span class="line">                try &#123;</span><br><span class="line">                    socket = serverSocket.accept();</span><br><span class="line">                    if (connectionTimeout &gt; 0)</span><br><span class="line">                        socket.setSoTimeout(connectionTimeout);</span><br><span class="line">                    socket.setTcpNoDelay(tcpNoDelay);</span><br><span class="line">                &#125;</span><br><span class="line">                HttpProcessor processor = createProcessor();</span><br><span class="line">                if (processor == null) &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        log(sm.getString(&quot;httpConnector.noProcessor&quot;));</span><br><span class="line">                        socket.close();</span><br><span class="line">                    &#125; catch (IOException e) &#123;</span><br><span class="line">                        ;</span><br><span class="line">                    &#125;</span><br><span class="line">                    continue;</span><br><span class="line">                &#125;</span><br><span class="line">                processor.assign(socket);</span><br><span class="line">            &#125;</span><br><span class="line">            synchronized (threadSync) &#123;</span><br><span class="line">                threadSync.notifyAll();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//注意在创建 HttpProcessor 就调用了start方法，启动了对应的线程</span><br><span class="line">private HttpProcessor newProcessor() &#123;</span><br><span class="line">    HttpProcessor processor = new HttpProcessor(this, curProcessors++);</span><br><span class="line">    if (processor instanceof Lifecycle) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            ((Lifecycle) processor).start();</span><br><span class="line">        &#125; catch (LifecycleException e) &#123;</span><br><span class="line">            log(&quot;newProcessor&quot;, e);</span><br><span class="line">            return (null);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    created.addElement(processor);</span><br><span class="line">    return (processor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//上面启动了线程之后，下面的run方法就开始启动了，不停地在循环中处理进来的请求</span><br><span class="line">final class HttpProcessor implements Lifecycle, Runnable &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        // Process requests until we receive a shutdown signal</span><br><span class="line">        while (!stopped) &#123;</span><br><span class="line">            // Wait for the next socket to be assigned</span><br><span class="line">            Socket socket = await();</span><br><span class="line">            if (socket == null)</span><br><span class="line">                continue;</span><br><span class="line">            // Process the request from this socket</span><br><span class="line">            try &#123;</span><br><span class="line">                //core方法</span><br><span class="line">                process(socket);</span><br><span class="line">            &#125; catch (Throwable t) &#123;</span><br><span class="line">                log(&quot;process.invoke&quot;, t);</span><br><span class="line">            &#125;</span><br><span class="line">            // Finish up this request</span><br><span class="line">            connector.recycle(this);</span><br><span class="line">        &#125;</span><br><span class="line">        // Tell threadStop() we have shut ourselves down successfully</span><br><span class="line">        synchronized (threadSync) &#123;</span><br><span class="line">            threadSync.notifyAll();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void process(Socket socket) &#123;</span><br><span class="line">        ...</span><br><span class="line">        connector.getContainer().invoke(request, response);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class SimpleContainer implements Container &#123;</span><br><span class="line">        public void invoke(Request request, Response response) throws IOException, ServletException &#123;</span><br><span class="line">        String servletName = ((HttpServletRequest) request).getRequestURI();</span><br><span class="line">        servletName = servletName.substring(servletName.lastIndexOf(&quot;/&quot;) + 1);</span><br><span class="line">        URLClassLoader loader = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            URL[] urls = new URL[1];</span><br><span class="line">            URLStreamHandler streamHandler = null;</span><br><span class="line">            File classPath = new File(WEB_ROOT);</span><br><span class="line">            String repository = (new URL(&quot;file&quot;, null, classPath.getCanonicalPath() + File.separator)).toString();</span><br><span class="line">            urls[0] = new URL(null, repository, streamHandler);</span><br><span class="line">            loader = new URLClassLoader(urls);</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            System.out.println(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        Class myClass = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            myClass = loader.loadClass(servletName);</span><br><span class="line">        &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">            System.out.println(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        Servlet servlet = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            servlet = (Servlet) myClass.newInstance();</span><br><span class="line">            servlet.service((HttpServletRequest) request, (HttpServletResponse) response);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            System.out.println(e.toString());</span><br><span class="line">        &#125; catch (Throwable e) &#123;</span><br><span class="line">            System.out.println(e.toString());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class ModernServlet extends HttpServlet &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void init(ServletConfig config) &#123;</span><br><span class="line">        System.out.println(&quot;ModernServlet -- init&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException &#123;</span><br><span class="line">        response.setContentType(&quot;text/html&quot;);</span><br><span class="line">        PrintWriter out = response.getWriter();</span><br><span class="line">        out.print(&quot;HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n&quot;);</span><br><span class="line">        out.println(&quot;&lt;html&gt;&quot;);</span><br><span class="line">        out.println(&quot;&lt;head&gt;&quot;);</span><br><span class="line">        out.println(&quot;&lt;title&gt;Modern Servlet&lt;/title&gt;&quot;);</span><br><span class="line">        out.println(&quot;&lt;/head&gt;&quot;);</span><br><span class="line">        out.println(&quot;&lt;body&gt;&quot;);</span><br><span class="line"></span><br><span class="line">        out.println(&quot;&lt;h2&gt;Headers&lt;/h2&quot;);</span><br><span class="line">        Enumeration headers = request.getHeaderNames();</span><br><span class="line">        while (headers.hasMoreElements()) &#123;</span><br><span class="line">            String header = (String) headers.nextElement();</span><br><span class="line">            out.println(&quot;&lt;br&gt;&quot; + header + &quot; : &quot; + request.getHeader(header));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        out.println(&quot;&lt;br&gt;&lt;h2&gt;Method&lt;/h2&quot;);</span><br><span class="line">        out.println(&quot;&lt;br&gt;&quot; + request.getMethod());</span><br><span class="line"></span><br><span class="line">        out.println(&quot;&lt;br&gt;&lt;h2&gt;Parameters&lt;/h2&quot;);</span><br><span class="line">        Enumeration parameters = request.getParameterNames();</span><br><span class="line">        while (parameters.hasMoreElements()) &#123;</span><br><span class="line">            String parameter = (String) parameters.nextElement();</span><br><span class="line">            out.println(&quot;&lt;br&gt;&quot; + parameter + &quot; : &quot; + request.getParameter(parameter));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        out.println(&quot;&lt;br&gt;&lt;h2&gt;Query String&lt;/h2&quot;);</span><br><span class="line">        out.println(&quot;&lt;br&gt;&quot; + request.getQueryString());</span><br><span class="line"></span><br><span class="line">        out.println(&quot;&lt;br&gt;&lt;h2&gt;Request URI&lt;/h2&quot;);</span><br><span class="line">        out.println(&quot;&lt;br&gt;&quot; + request.getRequestURI());</span><br><span class="line"></span><br><span class="line">        out.println(&quot;&lt;/body&gt;&quot;);</span><br><span class="line">        out.println(&quot;&lt;/html&gt;&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>具体过程如下:<br>(1)connector 创建 request 和 response 对象;<br>(2)connector 调用 StandardContext 实例的 invoke 方法;<br>(3)StandardContext 接着调用其 pipeline 的 invoke 方法， StandardContext 中 pipeline 的 basic valve 是<br>StandardContextValve，因此，StandardContext 的 pipeline 会调用 StandardContextValve 的 invoke 方法; (4)StandardContextValve 的 invoke 方法获取 wrapper 处理请求，调用 wrapper 的 invoke 方法; (5)StandardWrapper 是 Wrapper 接口的标准实现 ，StandardWrapper 实例的 invoke 方法会调用 其 pipeline<br>的 invoke 方法;<br>(6)StandardWrapper 的 pipeline 中的 basic valve 是 StandardWrapperValve，因此，会调用其 invoke 方<br>法，StandardWrapperValve调用 wrapper 的 allocate 方法获取 servlet 实例; (7)allocate 方法调用 load 方法载入 servlet 类，若已经载入，则无需重复载入; (8)load 方法调用 servlet 的 init 方法;<br>(9)StandardWrapperValve调用 servlet 的 service 方法。</p>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/08/16/SSO%E6%B5%81%E7%A8%8B/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">SSO流程</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/06/20/ThreadLocal/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">ThreadLocal</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2021&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Keep Team</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

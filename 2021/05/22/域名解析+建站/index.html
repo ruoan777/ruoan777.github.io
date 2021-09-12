@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="Keep Team">
+    
+    <title>
+        
+            域名解析+建站 |
+        
+        Keep Theme
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Keep Theme
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">域名解析+建站</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Keep Team</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-05-22 10:55:06
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>域名解析基本原理如下图</p>
+</blockquote>
+<p><img src="/images/dns.png" alt="asd"></p>
+<h3 id="正式步骤"><a href="#正式步骤" class="headerlink" title="正式步骤"></a>正式步骤</h3><ol start="0">
+<li><p>自行申请域名,申请vps(下面以centos为例)</p>
+</li>
+<li><p>修改系统时间为北京时间</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">date -R</span><br><span class="line">timedatectl set-local-rtc 1</span><br><span class="line">timedatectl set-timezone Asia/Shanghai</span><br></pre></td></tr></table></figure></li>
+<li><p>安装相关依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum makecache</span><br><span class="line">yum install curl</span><br><span class="line">yum install netcat</span><br></pre></td></tr></table></figure></li>
+</ol>
+<ol start="3">
+<li><p>安装dat和release.sh</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh</span><br><span class="line">curl -O https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-dat-release.sh</span><br><span class="line"></span><br><span class="line">bash install-release.sh</span><br><span class="line">bash install-dat-release.sh</span><br></pre></td></tr></table></figure></li>
+<li><p>编辑配置文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/etc/v2ray</span><br><span class="line">vim config.json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;inbounds&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;port&quot;: 443,</span><br><span class="line">      &quot;protocol&quot;: &quot;vmess&quot;,    </span><br><span class="line">      &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;clients&quot;: [</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;id&quot;: &quot;这里是随机生成的uuid&quot;,</span><br><span class="line">            &quot;alterId&quot;: 16</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;streamSettings&quot;: &#123;</span><br><span class="line">        &quot;network&quot;: &quot;ws&quot;,</span><br><span class="line">        &quot;security&quot;: &quot;tls&quot;,</span><br><span class="line">        &quot;tlsSettings&quot;: &#123;</span><br><span class="line">          &quot;certificates&quot;: [</span><br><span class="line">            &#123;</span><br><span class="line">              &quot;certificateFile&quot;: &quot;/etc/v2ray/v2ray.crt&quot;,</span><br><span class="line">              &quot;keyFile&quot;: &quot;/etc/v2ray/v2ray.key&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  &quot;outbounds&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;protocol&quot;: &quot;freedom&quot;,</span><br><span class="line">      &quot;settings&quot;: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>安装acem.sh证书生成工具</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget -O -  https://get.acme.sh | sh</span><br><span class="line">source ~/.bashrc</span><br></pre></td></tr></table></figure></li>
+<li><p>生成v2ray目录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /etc/  </span><br><span class="line">mkdir v2ray   </span><br><span class="line">cd ~</span><br></pre></td></tr></table></figure></li>
+<li><p>临时关闭防火墙</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld.service</span><br><span class="line">systemctl disable firewalld.service</span><br></pre></td></tr></table></figure></li>
+<li><p>生成证书</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ~/.acme.sh/acme.sh --issue -d 这里是域名 --alpn -k ec-256</span><br></pre></td></tr></table></figure>
+<p>这一步如果有如下报错，说明防火墙可能没有关闭, 如果使用的centos系统，关闭防火墙就可以成功获取证书，即还是要执行上一步</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">https://enterpr1se.info/2017/10/v2ray-gfw-setup/6/  </span><br><span class="line">请选择: 正在获取SSL证书，请稍等..  </span><br><span class="line">[Thu Nov 14 18:41:28 UTC 2019] Standalone mode.  </span><br><span class="line">[Thu Nov 14 18:41:28 UTC 2019] Creating domain key  </span><br><span class="line">[Thu Nov 14 18:41:28 UTC 2019] The domain key is here: /root/.acme.sh/XXX.xyz_ecc/XXX.xyz.key  </span><br><span class="line">[Thu Nov 14 18:41:28 UTC 2019] Single domain=&#x27;XXX.xyz&#x27;  </span><br><span class="line">[Thu Nov 14 18:41:28 UTC 2019] Getting domain auth token for each domain  </span><br><span class="line">[Thu Nov 14 18:41:30 UTC 2019] Getting webroot for domain=&#x27;XXX.xyz&#x27;  </span><br><span class="line">[Thu Nov 14 18:41:31 UTC 2019] Verifying: XXX.xyz  </span><br><span class="line">[Thu Nov 14 18:41:31 UTC 2019] Standalone mode server  </span><br><span class="line">[Thu Nov 14 18:41:35 UTC 2019] XXX.xyz:Verify error:Fetching http://XXX.xyz/.well-known/acme-challenge/TvxkrixcAQt1YDCONZ_l1wOcmDfZ6NgK68JWS8_Npck: Error getting validation data  </span><br><span class="line">[Thu Nov 14 18:41:35 UTC 2019] Please add &#x27;--debug&#x27; or &#x27;--log&#x27; to check more details.  </span><br><span class="line">[Thu Nov 14 18:41:35 UTC 2019] See: https://github.com/Neilpang/acme.sh/wiki/How-to-debug-acme.sh  </span><br></pre></td></tr></table></figure></li>
+<li><p>证书和密钥安装到指定路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd etc/v2ray  </span><br><span class="line">sudo ~/.acme.sh/acme.sh --installcert -d 这里是域名 --fullchainpath /etc/v2ray/v2ray.crt --keypath /etc/v2ray/v2ray.key --ecc</span><br><span class="line"></span><br><span class="line">记得要修改文件权限</span><br><span class="line">chmod 644 /etc/v2ray/v2ray.key  </span><br></pre></td></tr></table></figure></li>
+<li><p>查询tls开启状态<br><a class="link"   target="_blank" rel="noopener" href="https://www.ssllabs.com/ssltest/index.html" >查询tls<i class="fas fa-external-link-alt"></i></a></p>
+</li>
+<li><p>重启且设置且开机启动</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart v2ray</span><br><span class="line">systemctl enable v2ray</span><br><span class="line"></span><br><span class="line">查看当前状态</span><br><span class="line">sudo systemctl status -l v2ray</span><br></pre></td></tr></table></figure></li>
+<li><p>防火墙设置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Centos7默认安装了firewalld，如果没有安装的话，可以使用  </span><br><span class="line">yum install firewalld firewalld-config  </span><br><span class="line">进行安装。</span><br><span class="line"></span><br><span class="line">开启防火墙</span><br><span class="line">systemctl start firewalld </span><br><span class="line">设置开机启动</span><br><span class="line">systemctl enable firewalld</span><br><span class="line">查看当前防火墙状态</span><br><span class="line">systemctl status firewalld</span><br><span class="line"></span><br><span class="line">在指定区域打开端口（记得重启防火墙）</span><br><span class="line">firewall-cmd --zone=public --add-port=80/tcp  --permanent</span><br><span class="line">firewall-cmd --zone=public --add-port=443/tcp  --permanent</span><br><span class="line">firewall-cmd --zone=public --list-ports</span><br><span class="line">重启防火墙</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><p>卸载</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash install-release.sh --remove</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a class="link"   target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=mYXnhzAQZR8&ab_channel=ComeBey" >教程<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/u011846257/article/details/54707864" >防火墙相关<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://dash.cloudflare.com/" >域名管理<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://www.namesilo.com/" >域名注册<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://www.rootfw.com/posts/3e3bccee.html" >脚本参考<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/05/23/java%E4%B8%AD%E4%B8%BB%E7%BA%BF%E7%A8%8B%E5%92%8C%E5%AD%90%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%85%B3%E7%B3%BB/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">java中主线程和子线程的关系</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/05/21/leetcode236%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%A5%96%E5%85%88/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">leetcode236二叉树的最近公共祖先</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2021&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Keep Team</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

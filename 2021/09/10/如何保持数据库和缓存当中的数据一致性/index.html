@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="Keep Team">
+    
+    <title>
+        
+            如何保持数据库和缓存当中的数据一致性 |
+        
+        Keep Theme
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Keep Theme
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">如何保持数据库和缓存当中的数据一致性</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Keep Team</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-09-10 23:07:16
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E7%BC%93%E5%AD%98%E4%B8%93%E8%BE%91/">缓存专辑</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E7%BC%93%E5%AD%98/">缓存</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>说实话，这个问题老生长谈了，其中的逻辑也很绕，之前没有做过一个系统性的整理，今天闲来无事，作如下总结，以供后续查阅。</p>
+</blockquote>
+<h3 id="一-更新数据库，更新缓存方案"><a href="#一-更新数据库，更新缓存方案" class="headerlink" title="一. 更新数据库，更新缓存方案"></a>一. 更新数据库，更新缓存方案</h3><ol>
+<li>先更新数据库，再更新缓存<ul>
+<li>假如后一步失败<br>   更新数据库成功，更新缓存失败，则意味着下一次读取的时候，拿到的还是缓存里面的旧数据。</li>
+<li>并发问题<br>   假如AB两个线程同时对某一数据X进行操作，X=1<br>   A更新数据库中的X=1<br>   B更新数据库中的X=2<br>   B更新缓存中的X=2<br>   A更新缓存中的X=1<br>   经过这一顿操作，X在数据库中的值为2，在缓存中的值为1，数据不一致</li>
+</ul>
+</li>
+<li>先更新缓存，再更新数据库<ul>
+<li>假如后一步失败<br>   缓存更新成功，但数据库更新失败，则读请求每次可以拿到更新后的数据，但一旦缓存过期，则下一次又读到了老数据</li>
+<li>并发问题<br>   假如AB两个线程同时对某一数据X进行操作，X=1<br>   A更新缓存中的X=1<br>   B更新缓存中的X=2<br>   B更新数据库中的X=2<br>   A更新数据库中的X=1<br>   经过这一顿操作，X在数据库中的值为1，在缓存中的值为2，数据不一致  </li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>可见，关于并发问题的解决，一般可以通过加分布式锁来完成，比如两条线程要更改同一条数据，则必须在更改之前获取分布式锁，获取成功了才可以对数据进行操作。<br>拿不到锁的线程，返回失败，等待下次重试。<br>这样的方案，对于那种频繁更改数据的场景似乎不太友好，<br>第一、获取分布式锁开销不小，可能会有很大的性能损耗。<br>第二、从缓存利用率的角度来看，这样的方案真的好吗？数据每次发生变化都无脑更新缓存，但事实上缓存中的数据不一定会马上被读取，这样缓存中就放了<br>很多不常用的数据，造成了空间浪费。<br>第三、有的时候，缓存中的数据并不是和数据库中一一对应，而是有可能经过一系列的计算之后才放入缓存，这样就带来了机器CPU的损耗。<br>综上，更新数据库，更新缓存方案 不仅缓存利用率不高，还会造成机器性能的浪费。</p>
+</blockquote>
+<h3 id="二-更新数据库，删除缓存方案"><a href="#二-更新数据库，删除缓存方案" class="headerlink" title="二. 更新数据库，删除缓存方案"></a>二. 更新数据库，删除缓存方案</h3><ol>
+<li><strong>先更新数据库，再删除缓存</strong><ul>
+<li>假如后一步失败<br>   数据库更新成功，缓存删除失败，则意味着下一次读取的时候，拿到的还是缓存里面的旧数据。</li>
+<li>并发问题<br>   假如AB两个线程同时对某一数据X进行操作，X=1<br>   X假如在缓存中不存在<br>   A读取到数据库中的X=1<br>   B更新数据库中的X=2<br>   B删除缓存中的X<br>   A更新缓存中的X=1<br>   经过这一顿操作，X在数据库中的值为2，在缓存中的值为1，数据不一致  </li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>这种方案虽然也会出现数据不一致的可能，但在实际的生产场景中，出现的概率并不高，因为要发生这样的不一致，需要以下几个条件同时满足</p>
+</blockquote>
+<ul>
+<li>缓存正好过期，需要更新</li>
+<li>读请求正好进来，和写请求并发</li>
+<li>更新数据库+删除缓存的时间&lt;读取数据库+更新缓存的时间<br>事实上，第三条一般就是不满足的，一般更新数据库需要对数据加行锁或其他悲观/乐观锁，这一步的开销不低，一般花费的时间会大于读取数据库的时间</li>
+</ul>
+<ol start="2">
+<li>先删除缓存，再更新数据库<ul>
+<li>假如后一步失败<br>   缓存删除成功，但数据库更新失败，则下一次读请求进来，拿到的是数据库没有更新的数据，当然有问题。</li>
+<li>并发问题<br>   假如AB两个线程同时对某一数据X进行操作，X=1<br>   B删除缓存中的X<br>   A读取缓存没读到，去读数据库拿到了X=1<br>   B更新数据库中的X=2<br>   A更新缓存X=1<br>   经过这一顿操作，X在数据库中的值为2，在缓存中的值为1，数据不一致  </li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>上述一，二两种解决思路，不管哪一种遇到了第二步更新失败的场景，都会带来问题，所以这个问题需要着重解决<br>这里的思路是重试，即失败重试，这里又面对一个问题，第一次失败了一般紧接着第二次也会失败，重试多少次，重试也会占用CPU资源？<br>更好的方案是使用异步重试，业内通常使用的技术方案是使用消息队列，第二步失败后发消息到一个重试队列当中去，由队列异步去重试。<br>还有一种，如果不想使用消息队列，可以订阅数据库的binlog,拿到具体的数据，然后再去操作删除缓存。</p>
+</blockquote>
+<p>最后，关于使用先更新数据库，再删除缓存的方案，还有一种场景也可以拓展，就是主从库延迟和延迟双删问题。</p>
+<ul>
+<li>如果使用「先更新数据库，再删除缓存」方案，其实也会发生不一致：</li>
+<li>线程 A 更新主库 X = 2（原值 X = 1）</li>
+<li>线程 A 删除缓存</li>
+<li>线程 B 查询缓存，没有命中，查询「从库」得到旧值（从库 X = 1）</li>
+<li>从库「同步」完成（主从库 X = 2）</li>
+<li>线程 B 将「旧值」写入缓存（X = 1）</li>
+<li>最终 X 的值在缓存中是 1（旧值），在主从库中是 2（新值），也发生不一致。</li>
+</ul>
+<p>怎么解决这个问题？其实很简单，还是把缓存删除，但是不能立刻删，要延迟删，即缓存延迟双删策略。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>解决redis和mysql一致性问题：首先只能减少，不能强一致性，采用先更新数据库，再删除缓存，为保证两步都完成，需加消息对列或订阅更新日志辅助；</li>
+<li>主库同步和缓存的问题：先更新主库，为了等主库数据同步到从库的时间差，采用延迟删除缓存(为防止步骤未完成，可将延迟删除消息发到队列中)或双删缓存；</li>
+<li>为保证误差：尽可能减少主从库的延迟。</li>
+<li>不管使用了哪一种方案，选择了缓存作为中间件，在带来了性能提升的同时，必然要做出一些牺牲。</li>
+</ol>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a class="link"   target="_blank" rel="noopener" href="https://www.zhihu.com/question/319817091/answer/2110995185" >如何保持mysql和redis中数据的一致性<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/09/12/%E4%BD%BF%E7%94%A8GitHub-Actions%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">使用GitHub Actions自动部署</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/08/22/%E5%AE%A2%E6%88%B7%E7%AB%AF-%E6%9C%8D%E5%8A%A1%E7%AB%AF-%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">客户端/服务端 同步/异步</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2021&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Keep Team</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>
