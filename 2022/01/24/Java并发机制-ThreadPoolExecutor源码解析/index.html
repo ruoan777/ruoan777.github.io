@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            Java并发机制-ThreadPoolExecutor源码解析 |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Java并发机制-ThreadPoolExecutor源码解析</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv4</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2022-01-24 00:10:13
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前有一篇分析线上事故的文章，提到了线程池内部的异常处理，并且提到 <code>execute()</code> 和 <code>submit()</code> 对异常的处理是不一样的，这篇文章就以探索这两个的区别为主线，<br>分析 <code>ThreadPoolExecutor</code> 的源码。</p>
+<h3 id="为什么execute-不会吞异常，而submit-会吞异常"><a href="#为什么execute-不会吞异常，而submit-会吞异常" class="headerlink" title="为什么execute()不会吞异常，而submit()会吞异常"></a>为什么execute()不会吞异常，而submit()会吞异常</h3><p>这个需要看到线程池的源码了，会涉及到我们之前分析到 <code>FutureTask</code> , 具体的细节不贴了，文末第一篇参考文章讲的比较详细了，这里就简单说下看源码的顺序。<br>如果用 <code>execute</code> 提交的任务，会被封装成了一个 <code>Runnable</code> 任务，然后进去再被封装成一个 <code>Worker</code> ,最后在 <code>Worker</code> 的 <code>run</code> 方法里面跑 <code>runWoker</code> 方法， 里面再又调了我们最初的参数 <code>Runnable</code> 任务的任务，并且用 <code>try-catch</code> 捕获了异常，<br>会被直接抛出去，因此我们在 <code>execute</code> 中看到了我们的任务的异常信息。</p>
+<p>而对于 <code>submit</code> , 它涉及到 <code>FutureTask</code> , 会将异常通过 <code>setException</code> 设置到 <code>outcome</code> 变量当中去，所以在 <code>ThreadPoolExecutor</code> 这个层面 <code>try-catch</code> 不到异常，如果要拿异常，需要调用 <code>get</code> 方法。</p>
+<h3 id="怎么处理execute-抛出的异常"><a href="#怎么处理execute-抛出的异常" class="headerlink" title="怎么处理execute()抛出的异常"></a>怎么处理execute()抛出的异常</h3><pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">//1.实现一个自己的线程池工厂</span>
+<span class="token class-name">ThreadFactory</span> factory <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Runnable</span> r<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//创建一个线程</span>
+    <span class="token class-name">Thread</span> t <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//给创建的线程设置UncaughtExceptionHandler对象 里面实现异常的默认逻辑</span>
+    t<span class="token punctuation">.</span><span class="token function">setDefaultUncaughtExceptionHandler</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">Thread</span> thread1<span class="token punctuation">,</span> <span class="token class-name">Throwable</span> e<span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"线程工厂设置的exceptionHandler"</span> <span class="token operator">+</span> e<span class="token punctuation">.</span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> t<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+<span class="token comment">//2.创建一个自己定义的线程池，使用自己定义的线程工厂</span>
+<span class="token class-name">ExecutorService</span> service <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token class-name">TimeUnit</span><span class="token punctuation">.</span>MILLISECONDS<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">LinkedBlockingQueue</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> factory<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">//3.提交任务</span>
+service<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">/</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>上面这样使用的原理是什么嘞？<br><code>Thread</code> 类里面 <code>dispatchUncaughtException()</code> 这个方法，调用了 <code>getUncaughtExceptionHandler().uncaughtException(this, e);</code><br>获取到了我们设置的 <code>UncaughtExceptionHandler</code> ，并把线程对象和异常对象都作为参数传进去了。</p>
+<p>这个方法，只能被 <code>JVM</code> 调用，将未捕获异常分派给该方法所在的处理程序！！！注意，是 <code>JVM</code> 调用的 ！！！<br>调用的时间节点，就是当 <code>Thread</code> 对象抛出了未被捕获的异常的时候。那么对于 <code>execute()</code> , 添加该方法是生效的，也就是说可以主动捕获到线程池执行时抛出的异常。<br>上面提到 <code>submit()</code> 方法内部已经捕获了异常，只是没有打印出来。也因为异常已经被捕获，因此 <code>JVM</code> 也就不会去调用 Thread 的 <code>UncaughtExceptionHandler</code> 去处理异常。</p>
+<h3 id="怎么处理submit-抛出的异常"><a href="#怎么处理submit-抛出的异常" class="headerlink" title="怎么处理submit()抛出的异常"></a>怎么处理submit()抛出的异常</h3><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">executorOutputExceptionDemo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//定义线程池</span>
+    <span class="token class-name">ExecutorService</span> service <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">(</span>
+            <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token class-name">TimeUnit</span><span class="token punctuation">.</span>MILLISECONDS<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">LinkedBlockingQueue</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">afterExecute</span><span class="token punctuation">(</span><span class="token class-name">Runnable</span> r<span class="token punctuation">,</span> <span class="token class-name">Throwable</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">afterExecute</span><span class="token punctuation">(</span>r<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment">//这个是excute提交的时候</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>t <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> 
+                <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"afterExecute里面获取到异常信息"</span> <span class="token operator">+</span> t<span class="token punctuation">.</span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token comment">//如果r的实际类型是FutureTask 那么是submit提交的，所以可以在里面get到异常 </span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>r <span class="token keyword">instanceof</span> <span class="token class-name">FutureTask</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                    <span class="token class-name">Future</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span> future <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">Future</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span><span class="token punctuation">)</span> r<span class="token punctuation">;</span>
+                    future<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"future里面取执行异常"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    service<span class="token punctuation">.</span><span class="token function">submit</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">1</span> <span class="token operator">/</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="线程池参数的动态调整"><a href="#线程池参数的动态调整" class="headerlink" title="线程池参数的动态调整"></a>线程池参数的动态调整</h3><p>在阅读美团技术团队的这篇文章<a class="link"   target="_blank" rel="noopener" href="https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html" >Java线程池实现原理及其在美团业务中的实践<i class="fas fa-external-link-alt"></i></a>时,<br>里面提到：可以将线程池的参数从代码中迁移到分布式配置中心上，实现线程池参数可动态配置和即时生效。<br>这样的优点不言而喻。<br>虽然我们有一些推荐的公式，教我们怎么设置线程池的相关参数，还分什么cpu 密集型和 io 密集型。<br>但讲道理，生产场景还是复杂很多，一般并发任务的执行情况和任务类型相关，IO密集型和CPU密集型的任务运行起来的情况差异非常大，这种占比是较难合理预估的，<br>也就是说，大多数情况下，生产上配置的线程池参数需要依赖经验，或者换个角度，不如寻找一种可以快速配置上线，依据效果实时调整线程池参数的方案。<br>下图就是美团实现的线程池参数配置页面，看起来它可以支持线程池核心线程数，最大线程数，以及阻塞队列的配置。<br><img src="/images/threadPool.png" alt="美团的线程池参数动态配置"></p>
+<p>那么，它是怎么实现的。下面这篇文章给了一个很好的实践。<br><a class="link"   target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YbyC3qQfUm4B_QQ03GFiNw" >如何设置线程池参数？美团给出了一个让面试官虎躯一震的回答。<i class="fas fa-external-link-alt"></i></a></p>
+<p>这里给一个阻塞队列大小可以动态调整的demo</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ResizableCapacityLinkedBlockIngQueue</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">E</span><span class="token punctuation">></span></span> <span class="token keyword">extends</span> <span class="token class-name">LinkedBlockingQueue</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">E</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">ResizableCapacityLinkedBlockIngQueue</span><span class="token punctuation">(</span><span class="token keyword">int</span> capacity<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">super</span><span class="token punctuation">(</span>capacity<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">boolean</span> <span class="token function">setCapacity</span><span class="token punctuation">(</span><span class="token class-name">Integer</span> capacity<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">boolean</span> successFlag <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">int</span> oldCapacity <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span> <span class="token class-name">ReflectUtil</span><span class="token punctuation">.</span><span class="token function">getFieldValue</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token string">"capacity"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">AtomicInteger</span> count <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">AtomicInteger</span><span class="token punctuation">)</span> <span class="token class-name">ReflectUtil</span><span class="token punctuation">.</span><span class="token function">getFieldValue</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token string">"count"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span> size <span class="token operator">=</span> count<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token class-name">ReflectUtil</span><span class="token punctuation">.</span><span class="token function">setFieldValue</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token string">"capacity"</span><span class="token punctuation">,</span> capacity<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>capacity <span class="token operator">></span> size <span class="token operator">&amp;&amp;</span> size <span class="token operator">>=</span> oldCapacity<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">//不然当阻塞队列已满，再继续put元素的时候，主线程是会阻塞的。</span>
+                <span class="token comment">//因为如果强制把队列的 capacity 修改为了另外的值，这地方会感知到吗？它感知不到啊，它在等着别人唤醒呢。</span>
+                <span class="token class-name">ReflectUtil</span><span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token string">"signalNotFull"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> ex<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Dynamic modification of blocking queue size failed."</span><span class="token punctuation">,</span> ex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            successFlag <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">return</span> successFlag<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/javazejian/article/details/50890554?spm=1001.2014.3001.5502" >Executor框架之ThreadPoolExcutor &amp;&amp; ScheduledThreadPoolExecutor浅析（多线程编程之三）<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/ncy1/articles/11629933.html" >线程池异常处理详解，一文搞懂！<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html" >Java线程池实现原理及其在美团业务中的实践<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://www.javadoop.com/post/java-thread-pool" >深度解读 java 线程池设计思想及源码实现<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YbyC3qQfUm4B_QQ03GFiNw" >如何设置线程池参数？美团给出了一个让面试官虎躯一震的回答。<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040858637" >填个坑！再谈线程池动态调整那点事。<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000039815066" >面试官一个线程池问题把我问懵逼了。<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/02/10/leetcode%E9%93%BE%E8%A1%A8%E4%B8%93%E9%A2%98/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">leetcode链表专题</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/01/20/Java%E5%B9%B6%E5%8F%91%E6%9C%BA%E5%88%B6-ExecutorCompletionService%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Java并发机制-ExecutorCompletionService源码解析</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88execute-%E4%B8%8D%E4%BC%9A%E5%90%9E%E5%BC%82%E5%B8%B8%EF%BC%8C%E8%80%8Csubmit-%E4%BC%9A%E5%90%9E%E5%BC%82%E5%B8%B8"><span class="nav-text">为什么execute()不会吞异常，而submit()会吞异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86execute-%E6%8A%9B%E5%87%BA%E7%9A%84%E5%BC%82%E5%B8%B8"><span class="nav-text">怎么处理execute()抛出的异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86submit-%E6%8A%9B%E5%87%BA%E7%9A%84%E5%BC%82%E5%B8%B8"><span class="nav-text">怎么处理submit()抛出的异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8F%82%E6%95%B0%E7%9A%84%E5%8A%A8%E6%80%81%E8%B0%83%E6%95%B4"><span class="nav-text">线程池参数的动态调整</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>
