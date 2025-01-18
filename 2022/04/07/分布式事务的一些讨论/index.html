@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            分布式事务的一些讨论 |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">分布式事务的一些讨论</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv5</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2022-04-07 23:54:15
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E4%BA%8B%E5%8A%A1/">事务</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>分布式事务的定义：指事务的发起者、资源及资源管理器和事务协调者分别位于分布式系统的不同节点之上。本质上来说，分布式事务就是为了保证在分布式场景下，数据操作的正确执行。</p>
+</blockquote>
+<h3 id="一些基本概念"><a href="#一些基本概念" class="headerlink" title="一些基本概念"></a>一些基本概念</h3><ol>
+<li>DTP: <code>Distributed Transaction Processing Reference Model</code>， X&#x2F;Open 组织定义了分布式事务的模型，该模型就是DTP，DTP有以下三个重要的模块<ul>
+<li><code>AP (Application Program)</code>: <strong>应用程序</strong>，可以理解为使用DTP分布式事务的应用程序。</li>
+<li><code>RM (Resource Manager)</code> : 资源管理器，可以理解为<strong>事务的参与者</strong>，一般情况下是指一个数据库实例，通过资源管理器对该数据库进行控制，资源管理器控制着分支事务。</li>
+<li><code>TM (Transaction Manager)</code> : 事务管理器，负责协调和管理事务，事务管理器<strong>控制着全局事务</strong>，管理事务生命周期，并协调各个RM。全局事务是指分布式事务处理环境中，需要操作多个数据库共同完成一个工作，这个工作即是一个全局事务。</li>
+</ul>
+</li>
+<li>XA: XA是由X&#x2F;Open组织提出的分布式事务的规范(要想连接XA,先理解DTP), XA 规范最重要的作用就是定义 RM（资源管理器）与 TM（事务管理器）之间的交互接口。主流的关系型数据库产品都是实现了XA接口的。<br>XA规范的目的是允许的多个资源（如数据库，应用服务器，消息队列等）在同一事务中访问，这样可以使 ACID 属性跨越应用程序而保持有效。</li>
+<li>2PC: <code>Two-Phase Commit</code>，两阶段提交，是为了保证分布式系统架构下所有节点在进行事务处理过程中能够保证原子性和一致性而设计的一种算法。</li>
+<li>XA和2PC 的关系：两阶段提交是一种理论，XA事务 是这种理论的实现。</li>
+</ol>
+<h3 id="2PC理论的示意图"><a href="#2PC理论的示意图" class="headerlink" title="2PC理论的示意图"></a>2PC理论的示意图</h3><ul>
+<li>准备阶段（又称投票阶段）：事务询问 -&gt; 执行事务 -&gt; 返回响应</li>
+<li>提交阶段：执行事务提交 -&gt; 中断事务<br><img src="/images/2PC.png" alt="2PC"></li>
+</ul>
+<p><img src="/images/2PC_status.png" alt="2PC_status"><br>（该图转自<a class="link"   target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000012534071" >分布式事务：两阶段提交与三阶段提交<i class="fas fa-external-link-alt"></i></a>）</p>
+<ul>
+<li>站在协调者的角度，在发起投票之后就进入了 WAIT 状态，等待所有参与者回复各自事务执行状态，并在收到所有参与者的回复后决策下一步是发送 commit 或 rollback 信息。</li>
+<li>站在参与者的角度，当回复完协调者的投票请求之后便进入 READY 状态（能够正常执行事务），接下去就是等待协调者最终的决策通知，一旦收到通知便可依据决策执行 commit 或 rollback 操作。</li>
+</ul>
+<h3 id="2PC-优缺点"><a href="#2PC-优缺点" class="headerlink" title="2PC 优缺点"></a>2PC 优缺点</h3><p>2PC 优点显而易见，那就是 原理简单，实现方便。简单也意味着很多地方不能尽善尽美，这里梳理三个比较核心的缺陷</p>
+<ol>
+<li>同步阻塞：无论是在第一阶段的过程中，还是在第二阶段，所有的参与者资源和协调者资源都是被锁住的，只有当所有节点准备完毕，事务协调者才会通知进行全局提交，参与者进行本地事务提交后才会释放资源。这样的过程会比较漫长，对性能影响比较大</li>
+<li>单点故障：如果协调者出现问题，那么整个二阶段提交流程将无法运转。另外，如果协调者是在第二阶段出现了故障，那么其它参与者将会处于锁定事务资源的状态中</li>
+<li>数据不一致性：当协调者在第二阶段向所有参与者发送 Commit 请求后，发生了局部网络异常或者协调者在尚未发送完 Commit 请求之前自身发生了崩溃，导致只有部分参与者接收到 Commit 请求，那么接收到的参与者就会进行提交事务，进而形成了数据不一致性</li>
+</ol>
+<h3 id="XA方案的Mysql实现"><a href="#XA方案的Mysql实现" class="headerlink" title="XA方案的Mysql实现"></a>XA方案的Mysql实现</h3><pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>sql<span class="token punctuation">.</span></span><span class="token class-name">Connection</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">java<span class="token punctuation">.</span>sql<span class="token punctuation">.</span></span><span class="token class-name">Statement</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>sql<span class="token punctuation">.</span></span><span class="token class-name">XAConnection</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>transaction<span class="token punctuation">.</span>xa<span class="token punctuation">.</span></span><span class="token class-name">XAResource</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">javax<span class="token punctuation">.</span>transaction<span class="token punctuation">.</span>xa<span class="token punctuation">.</span></span><span class="token class-name">Xid</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>mysql<span class="token punctuation">.</span>jdbc<span class="token punctuation">.</span>jdbc2<span class="token punctuation">.</span>optional<span class="token punctuation">.</span></span><span class="token class-name">MysqlXADataSource</span></span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token import"><span class="token namespace">com<span class="token punctuation">.</span>mysql<span class="token punctuation">.</span>jdbc<span class="token punctuation">.</span>jdbc2<span class="token punctuation">.</span>optional<span class="token punctuation">.</span></span><span class="token class-name">MysqlXid</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">XaDemo</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token class-name">MysqlXADataSource</span> <span class="token function">getDataSource</span><span class="token punctuation">(</span><span class="token class-name">String</span> connStr<span class="token punctuation">,</span> <span class="token class-name">String</span> user<span class="token punctuation">,</span> <span class="token class-name">String</span> pwd<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+
+            <span class="token class-name">MysqlXADataSource</span> ds <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MysqlXADataSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ds<span class="token punctuation">.</span><span class="token function">setUrl</span><span class="token punctuation">(</span>connStr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ds<span class="token punctuation">.</span><span class="token function">setUser</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ds<span class="token punctuation">.</span><span class="token function">setPassword</span><span class="token punctuation">(</span>pwd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token keyword">return</span> ds<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> arg<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">String</span> connStr1 <span class="token operator">=</span> <span class="token string">"jdbc:mysql://118.89.107.162:3306/wjq"</span><span class="token punctuation">;</span>
+        <span class="token class-name">String</span> connStr2 <span class="token operator">=</span> <span class="token string">"jdbc:mysql://118.89.107.162:3307/wjq"</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">//从不同数据库获取数据库数据源</span>
+            <span class="token class-name">MysqlXADataSource</span> ds1 <span class="token operator">=</span> <span class="token function">getDataSource</span><span class="token punctuation">(</span>connStr1<span class="token punctuation">,</span> <span class="token string">"root"</span><span class="token punctuation">,</span> <span class="token string">"XXXXXXXX"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">MysqlXADataSource</span> ds2 <span class="token operator">=</span> <span class="token function">getDataSource</span><span class="token punctuation">(</span>connStr2<span class="token punctuation">,</span> <span class="token string">"root"</span><span class="token punctuation">,</span> <span class="token string">"XXXXXXXX"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token comment">//数据库1获取连接</span>
+            <span class="token class-name">XAConnection</span> xaConnection1 <span class="token operator">=</span> ds1<span class="token punctuation">.</span><span class="token function">getXAConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">XAResource</span> xaResource1 <span class="token operator">=</span> xaConnection1<span class="token punctuation">.</span><span class="token function">getXAResource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">Connection</span> connection1 <span class="token operator">=</span> xaConnection1<span class="token punctuation">.</span><span class="token function">getConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">Statement</span> statement1 <span class="token operator">=</span> connection1<span class="token punctuation">.</span><span class="token function">createStatement</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token comment">//数据库2获取连接</span>
+            <span class="token class-name">XAConnection</span> xaConnection2 <span class="token operator">=</span> ds2<span class="token punctuation">.</span><span class="token function">getXAConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">XAResource</span> xaResource2 <span class="token operator">=</span> xaConnection2<span class="token punctuation">.</span><span class="token function">getXAResource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">Connection</span> connection2 <span class="token operator">=</span> xaConnection2<span class="token punctuation">.</span><span class="token function">getConnection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">Statement</span> statement2 <span class="token operator">=</span> connection2<span class="token punctuation">.</span><span class="token function">createStatement</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token comment">//创建事务分支的xid</span>
+            <span class="token class-name">Xid</span> xid1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MysqlXid</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">&#123;</span> <span class="token number">0x01</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">&#123;</span> <span class="token number">0x02</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name">Xid</span> xid2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MysqlXid</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">&#123;</span> <span class="token number">0x011</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token keyword">byte</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">&#123;</span> <span class="token number">0x012</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">//事务分支1关联分支事务sql语句 </span>
+                <span class="token comment">// 三步走： xa start  具体语句 xa end</span>
+                xaResource1<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span>xid1<span class="token punctuation">,</span> <span class="token class-name">XAResource</span><span class="token punctuation">.</span><span class="token constant">TMNOFLAGS</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">int</span> update1Result <span class="token operator">=</span> statement1<span class="token punctuation">.</span><span class="token function">executeUpdate</span><span class="token punctuation">(</span><span class="token string">"UPDATE accounts SET BALANCE = CAST('9700.00' AS DECIMAL) WHERE CUSTOMER_NO = '001'"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                xaResource1<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span>xid1<span class="token punctuation">,</span> <span class="token class-name">XAResource</span><span class="token punctuation">.</span><span class="token constant">TMSUCCESS</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                <span class="token comment">//事务分支2关联分支事务sql语句</span>
+                <span class="token comment">// 三步走： xa start  具体语句 xa end</span>
+                xaResource2<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span>xid2<span class="token punctuation">,</span> <span class="token class-name">XAResource</span><span class="token punctuation">.</span><span class="token constant">TMNOFLAGS</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">int</span> update2Result <span class="token operator">=</span> statement2<span class="token punctuation">.</span><span class="token function">executeUpdate</span><span class="token punctuation">(</span><span class="token string">"INSERT INTO user_purchase_his(CUSTOMER_NO, SERIAL_NO, AMOUNT, CURRENCY, REMARK) "</span>
+                        <span class="token operator">+</span> <span class="token string">" VALUES ('001', '20190303204700000001', 200, 'CNY', '购物消费')"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                xaResource2<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span>xid2<span class="token punctuation">,</span> <span class="token class-name">XAResource</span><span class="token punctuation">.</span><span class="token constant">TMSUCCESS</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                <span class="token comment">// 两阶段提交协议第一阶段   xa prepare</span>
+                <span class="token keyword">int</span> ret1 <span class="token operator">=</span> xaResource1<span class="token punctuation">.</span><span class="token function">prepare</span><span class="token punctuation">(</span>xid1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">int</span> ret2 <span class="token operator">=</span> xaResource2<span class="token punctuation">.</span><span class="token function">prepare</span><span class="token punctuation">(</span>xid2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                <span class="token comment">// 两阶段提交协议第二阶段 xa commit | xa rollback</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token class-name">XAResource</span><span class="token punctuation">.</span><span class="token constant">XA_OK</span> <span class="token operator">==</span> ret1 <span class="token operator">&amp;&amp;</span> <span class="token class-name">XAResource</span><span class="token punctuation">.</span><span class="token constant">XA_OK</span> <span class="token operator">==</span> ret2<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    xaResource1<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span>xid1<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    xaResource2<span class="token punctuation">.</span><span class="token function">commit</span><span class="token punctuation">(</span>xid2<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                    <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"reslut1:"</span> <span class="token operator">+</span> update1Result <span class="token operator">+</span> <span class="token string">", result2:"</span> <span class="token operator">+</span> update2Result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="消息事务（借助公司使用的消息队列QMQ来阐述）"><a href="#消息事务（借助公司使用的消息队列QMQ来阐述）" class="headerlink" title="消息事务（借助公司使用的消息队列QMQ来阐述）"></a>消息事务（借助公司使用的消息队列QMQ来阐述）</h3><p>借助关系型数据库里久经考验的事务来实现这个数据的一致性。<br>写本地消息和业务操作放在一个事务里，保证了业务和发消息的原子性，要么他们全都成功，要么全都失败。<br>具体做法：在公司所有 MySQL 实例里初始化出一个 message db，这个可以放到自动化流程中，对应用透明。然后我们只要将发消息与业务操作放到同一个 DB 事务里即可。</p>
+<p><img src="/images/qmq.png" alt="qmq"></p>
+<pre class="language-none"><code class="language-none">1. begin tx 开启本地事务
+2. do work 执行业务操作
+3. insert message 向同实例消息库插入消息
+4. end tx 事务提交
+5. send message 网络向 server 发送消息
+6. reponse server 回应消息
+7. delete message 如果 server 回复成功则删除消息
+8. scan messages 补偿任务扫描未发送消息
+9. send message 补偿任务补偿消息
+10. delete messages 补偿任务删除补偿成功的消息</code></pre>
+
+<h3 id="Seata"><a href="#Seata" class="headerlink" title="Seata"></a>Seata</h3><p>Seata 是阿里开源的分布式事务解决方案。它其实也是从两段提交演变而来的一种分布式事务解决方案，提供了 AT、TCC、SAGA 和 XA 等事务模式，这里重点介绍 AT模式。</p>
+<blockquote>
+<p>Seata 在数据源做了一层代理层，所以我们使用 Seata 时，我们使用的数据源实际上用的是 Seata 自带的数据源代理 DataSourceProxy，Seata 在这层代理中加入了很多逻辑，主要是解析 SQL，把业务数据在更新前后的数据镜像组织成回滚日志，并将 undo log 日志插入 undo_log 表中，保证每条更新数据的业务 sql 都有对应的回滚日志存在。</p>
+</blockquote>
+<blockquote>
+<p>这样做的好处就是，本地事务执行完可以立即释放本地事务锁定的资源，然后向 TC 上报分支状态。当 TM 决议全局提交时，就不需要同步协调处理了，TC 会异步调度各个 RM 分支事务删除对应的 undo log 日志即可，这个步骤非常快速地可以完成；当 TM 决议全局回滚时，RM 收到 TC 发送的回滚请求，RM 通过 XID 找到对应的 undo log 回滚日志，然后执行回滚日志完成回滚操作。</p>
+</blockquote>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a class="link"   target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000012534071" >分布式事务：两阶段提交与三阶段提交<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://github.com/longtai-cn/framework/blob/main/docs/distributed/%E5%BD%BB%E5%BA%95%E6%8E%8C%E6%8F%A1%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A12PC%E3%80%813PC%E6%A8%A1%E5%9E%8B.md" >彻底掌握分布式事务2PC、3PC模型<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040321750" >分布式事务最经典的七种解决方案<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://seata.io/zh-cn/docs/dev/mode/xa-mode.html" >Seata-一款开源的分布式事务解决方案<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MjM5MDE0Mjc4MA==&mid=2651011843&idx=1&sn=2c6591bfbb05ac3332974b030616dc88&scene=21#wechat_redirect" >开源消息队列QMQ的设计与实现理念<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://blog.51cto.com/u_15287666/2989395" >MySQL中基于XA实现的分布式事务<i class="fas fa-external-link-alt"></i></a><br><a class="link"   target="_blank" rel="noopener" href="https://objcoding.com/2019/07/11/seata/" >分布式事务中间件Seata的设计原理<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/05/04/%E5%85%B3%E4%BA%8E%E9%95%BF%E8%BD%AE%E8%AF%A2%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%8E%A2%E8%AE%A8/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">关于长轮询的实现探讨</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/03/28/Mybatis%E4%B8%8ESpring%E6%95%B4%E5%90%88%E6%80%9D%E8%B7%AF%E7%9A%84%E5%BA%94%E7%94%A8/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Mybatis与Spring整合思路的应用</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2025&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">一些基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2PC%E7%90%86%E8%AE%BA%E7%9A%84%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="nav-text">2PC理论的示意图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2PC-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-text">2PC 优缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XA%E6%96%B9%E6%A1%88%E7%9A%84Mysql%E5%AE%9E%E7%8E%B0"><span class="nav-text">XA方案的Mysql实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E4%BA%8B%E5%8A%A1%EF%BC%88%E5%80%9F%E5%8A%A9%E5%85%AC%E5%8F%B8%E4%BD%BF%E7%94%A8%E7%9A%84%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97QMQ%E6%9D%A5%E9%98%90%E8%BF%B0%EF%BC%89"><span class="nav-text">消息事务（借助公司使用的消息队列QMQ来阐述）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Seata"><span class="nav-text">Seata</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

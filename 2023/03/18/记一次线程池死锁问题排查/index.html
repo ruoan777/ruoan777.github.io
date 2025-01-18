@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            记一次线程池死锁问题排查 |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">记一次线程池死锁问题排查</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv5</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2023-03-18 15:41:16
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">线程池</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>一个工作日的傍晚，突然收到im软件的【动态线程池运行告警】，一看是活跃度告警，看具体的告警信息，是说线程池的活跃线程都跑满了，<br><img src="/images/dynamictp3.png" alt="线程池运行告警"><br><img src="/images/dynamictp4.png" alt="线程池运行告警"><br>一看是测试环境，所以悬着的心先放一半，不是生产就好@。@</p>
+<h3 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h3><p>正准备看看监控到底是啥情况，发现im软件又来了一条，仔细一看，除了告警的时间，其余告警参数和上面的一毛一样。<br>这不对啊，难不成是动态线程池组件bug了？<br>再仔细看看参数，核心线程数10，最大线程数30，队列长度50，而活跃线程数也是30，队列剩余容量是0。说明线程池已经彻底被打满，这种情况一般是因为有突发流量导致，但是上面的疑问还是没有解决，为什么间隔了2min，收到的告警里面参数却依然不变呢？如果是这段时间线程池未收到任何新的任务，那么老的任务为啥还没有被执行完呢。</p>
+<h3 id="线程堆栈"><a href="#线程堆栈" class="headerlink" title="线程堆栈"></a>线程堆栈</h3><p>带着这些疑问，直接进监控页面，获取线程的当前堆栈看看能不能找到蛛丝马迹。<br>如果没有相应的工具，一般的做法是登陆机器，使用 <code>jstack</code> 等命令对线程进行 <code>dump</code> ，但大部分大厂应该都不会用这么原始方式吧？一般都会封装一些成熟都监控软件，使用可视化的界面，点点点几下就能拿到堆栈了。从监控当中，拿到的问题机器的问题线程堆栈如下。</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token operator">-</span> waiting on <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>CompletableFuture</span>$<span class="token class-name">Signaller</span><span class="token annotation punctuation">@42d05867</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span></span>LockSupport</span><span class="token punctuation">.</span><span class="token function">park</span><span class="token punctuation">(</span><span class="token class-name">LockSupport</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">175</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>CompletableFuture</span>$<span class="token class-name">Signaller</span><span class="token punctuation">.</span><span class="token function">block</span><span class="token punctuation">(</span><span class="token class-name">CompletableFuture</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1707</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>ForkJoinPool</span><span class="token punctuation">.</span><span class="token function">managedBlock</span><span class="token punctuation">(</span><span class="token class-name">ForkJoinPool</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">3323</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>CompletableFuture</span><span class="token punctuation">.</span><span class="token function">waitingGet</span><span class="token punctuation">(</span><span class="token class-name">CompletableFuture</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1742</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>CompletableFuture</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token class-name">CompletableFuture</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1908</span><span class="token punctuation">)</span>
+at com<span class="token punctuation">.</span><span class="token constant">XXXX</span><span class="token punctuation">.</span>wrapper<span class="token punctuation">.</span>WorkerWrapper<span class="token punctuation">.</span><span class="token function">beginNext</span><span class="token punctuation">(</span><span class="token class-name">WorkerWrapper</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">207</span><span class="token punctuation">)</span>
+at com<span class="token punctuation">.</span><span class="token constant">XXXX</span><span class="token punctuation">.</span>wrapper<span class="token punctuation">.</span>WorkerWrapper<span class="token punctuation">.</span><span class="token function">work</span><span class="token punctuation">(</span><span class="token class-name">WorkerWrapper</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">121</span><span class="token punctuation">)</span>
+at com<span class="token punctuation">.</span><span class="token constant">XXXX</span><span class="token punctuation">.</span>async<span class="token punctuation">.</span>wrapper<span class="token punctuation">.</span>WorkerWrapper<span class="token punctuation">.</span><span class="token function">work</span><span class="token punctuation">(</span><span class="token class-name">WorkerWrapper</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">160</span><span class="token punctuation">)</span>
+at com<span class="token punctuation">.</span><span class="token constant">XXXX</span><span class="token punctuation">.</span>async<span class="token punctuation">.</span>executor<span class="token punctuation">.</span>Async<span class="token punctuation">.</span>lambda$beginWork$<span class="token function">0</span><span class="token punctuation">(</span><span class="token class-name">Async</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">42</span><span class="token punctuation">)</span>
+at com<span class="token punctuation">.</span><span class="token constant">XXXX</span><span class="token punctuation">.</span>async<span class="token punctuation">.</span>executor<span class="token punctuation">.</span>Async$$<span class="token class-name">Lambda</span>$<span class="token number">2509</span><span class="token operator">/</span><span class="token number">628700883.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Unknown</span> <span class="token class-name">Source</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>CompletableFuture</span>$<span class="token class-name">AsyncRun</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">CompletableFuture</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1640</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>alibaba<span class="token punctuation">.</span>ttl<span class="token punctuation">.</span></span>TtlRunnable</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">TtlRunnable</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">47</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>dtp<span class="token punctuation">.</span>core<span class="token punctuation">.</span>support<span class="token punctuation">.</span>runnable<span class="token punctuation">.</span></span>DtpRunnable</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">DtpRunnable</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">27</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>dianping<span class="token punctuation">.</span>cat<span class="token punctuation">.</span>async<span class="token punctuation">.</span></span>CatWrappedRunnable</span><span class="token punctuation">.</span>lambda$run$<span class="token function">0</span><span class="token punctuation">(</span><span class="token class-name">CatWrappedRunnable</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">30</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>dianping<span class="token punctuation">.</span>cat<span class="token punctuation">.</span>async<span class="token punctuation">.</span></span>CatWrappedRunnable</span>$$<span class="token class-name">Lambda</span>$<span class="token number">116</span><span class="token operator">/</span><span class="token number">1721617934.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token class-name">Unknown</span> <span class="token class-name">Source</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>dianping<span class="token punctuation">.</span>cat<span class="token punctuation">.</span>async<span class="token punctuation">.</span></span>CatAsyncSupportTemplate</span><span class="token punctuation">.</span><span class="token function">doExecute4Simple</span><span class="token punctuation">(</span><span class="token class-name">CatAsyncSupportTemplate</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">147</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>dianping<span class="token punctuation">.</span>cat<span class="token punctuation">.</span>async<span class="token punctuation">.</span></span>CatAsyncSupportTemplate</span><span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token class-name">CatAsyncSupportTemplate</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">94</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">com<span class="token punctuation">.</span>dianping<span class="token punctuation">.</span>cat<span class="token punctuation">.</span>async<span class="token punctuation">.</span></span>CatWrappedRunnable</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">CatWrappedRunnable</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">29</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>ThreadPoolExecutor</span><span class="token punctuation">.</span><span class="token function">runWorker</span><span class="token punctuation">(</span><span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1149</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>ThreadPoolExecutor</span>$<span class="token class-name">Worker</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">624</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span></span>Thread</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Thread</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">748</span><span class="token punctuation">)</span></code></pre>
+<p>线程的状态显示在<code>WAITING</code>。</p>
+<p>虽说是等待状态，但是一般来讲，线程池的线程会停留在 <code>ThreadPoolExecutor</code> 的 <code>getTask</code> 方法处，等待从阻塞队列获取任务。</p>
+<pre class="language-java" data-language="java"><code class="language-java">at <span class="token class-name"><span class="token namespace">sun<span class="token punctuation">.</span>misc<span class="token punctuation">.</span></span>Unsafe</span><span class="token punctuation">.</span><span class="token function">park</span><span class="token punctuation">(</span><span class="token class-name">Native</span> <span class="token class-name">Method</span><span class="token punctuation">)</span>
+<span class="token operator">-</span> waiting on <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span></span>AbstractQueuedSynchronizer</span>$<span class="token class-name">ConditionObject</span><span class="token annotation punctuation">@23c000a1</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span></span>LockSupport</span><span class="token punctuation">.</span><span class="token function">park</span><span class="token punctuation">(</span><span class="token class-name">LockSupport</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">175</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>locks<span class="token punctuation">.</span></span>AbstractQueuedSynchronizer</span>$<span class="token class-name">ConditionObject</span><span class="token punctuation">.</span><span class="token function">await</span><span class="token punctuation">(</span><span class="token class-name">AbstractQueuedSynchronizer</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2039</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>ScheduledThreadPoolExecutor</span>$<span class="token class-name">DelayedWorkQueue</span><span class="token punctuation">.</span><span class="token function">take</span><span class="token punctuation">(</span><span class="token class-name">ScheduledThreadPoolExecutor</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1088</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>ScheduledThreadPoolExecutor</span>$<span class="token class-name">DelayedWorkQueue</span><span class="token punctuation">.</span><span class="token function">take</span><span class="token punctuation">(</span><span class="token class-name">ScheduledThreadPoolExecutor</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">809</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>ThreadPoolExecutor</span><span class="token punctuation">.</span><span class="token function">getTask</span><span class="token punctuation">(</span><span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1074</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>ThreadPoolExecutor</span><span class="token punctuation">.</span><span class="token function">runWorker</span><span class="token punctuation">(</span><span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1134</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span></span>ThreadPoolExecutor</span>$<span class="token class-name">Worker</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">624</span><span class="token punctuation">)</span>
+at <span class="token class-name"><span class="token namespace">java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span></span>Thread</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token class-name">Thread</span><span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">748</span><span class="token punctuation">)</span></code></pre>
+<p>而这里有点奇怪，阻塞在了 <code>CompletableFuture</code> 的 <code>get</code> 方法。再之前的 <code>WorkerWrapper</code> 是我使用了京东开源的一个任务编排组件，见文后的链接。<br>经过一系列的源码排查，发现其使用了线程池嵌套的方式对任务对进行处理，当线程池的线程被父任务打满，那么父任务新开的子任务就不得不进入线程池的阻塞队列进行排队，从而导致父任务在等待子任务的执行，而子任务因为所有的线程都被父任务占用，无法从阻塞队列中出队，导致发生死锁。</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">/**
+ * 进行下一个任务
+ */</span>
+<span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">beginNext</span><span class="token punctuation">(</span><span class="token class-name">ExecutorService</span> executorService<span class="token punctuation">,</span> <span class="token keyword">long</span> now<span class="token punctuation">,</span> <span class="token keyword">long</span> remainTime<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//花费的时间</span>
+    <span class="token keyword">long</span> costTime <span class="token operator">=</span> <span class="token class-name">SystemClock</span><span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> now<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>nextWrappers <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>nextWrappers<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        nextWrappers<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">work</span><span class="token punctuation">(</span>executorService<span class="token punctuation">,</span> <span class="token class-name">WorkerWrapper</span><span class="token punctuation">.</span><span class="token keyword">this</span><span class="token punctuation">,</span> remainTime <span class="token operator">-</span> costTime<span class="token punctuation">,</span> forParamUseWrappers<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token class-name">CompletableFuture</span><span class="token punctuation">[</span><span class="token punctuation">]</span> futures <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CompletableFuture</span><span class="token punctuation">[</span>nextWrappers<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> nextWrappers<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">int</span> finalI <span class="token operator">=</span> i<span class="token punctuation">;</span>
+        futures<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token class-name">CompletableFuture</span><span class="token punctuation">.</span><span class="token function">runAsync</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> nextWrappers<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>finalI<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">work</span><span class="token punctuation">(</span>executorService<span class="token punctuation">,</span> <span class="token class-name">WorkerWrapper</span><span class="token punctuation">.</span><span class="token keyword">this</span><span class="token punctuation">,</span> remainTime <span class="token operator">-</span> costTime<span class="token punctuation">,</span> forParamUseWrappers<span class="token punctuation">)</span><span class="token punctuation">,</span> executorService<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">CompletableFuture</span><span class="token punctuation">.</span><span class="token function">allOf</span><span class="token punctuation">(</span>futures<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><ul>
+<li>获取异步任务的执行结果，必须加上超时时间，这样至少不会导致程序一直假死</li>
+<li>不要使用嵌套的异步任务，或者嵌套任务不要获取子任务结果，不要阻塞主任务</li>
+<li>主任务和子任务的线程池拆分成两个线程池池，不要使用同一个线程池（推荐）</li>
+</ul>
+<p>文末美团的文章当中，也提到线程池循环引用会导致死锁</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">Object</span> <span class="token function">doGet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token class-name">ExecutorService</span> threadPool1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ThreadPoolExecutor</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">0L</span><span class="token punctuation">,</span> <span class="token class-name">TimeUnit</span><span class="token punctuation">.</span><span class="token constant">MILLISECONDS</span><span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">ArrayBlockingQueue</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token class-name">CompletableFuture</span> cf1 <span class="token operator">=</span> <span class="token class-name">CompletableFuture</span><span class="token punctuation">.</span><span class="token function">supplyAsync</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">//do sth</span>
+    <span class="token keyword">return</span> <span class="token class-name">CompletableFuture</span><span class="token punctuation">.</span><span class="token function">supplyAsync</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"child"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token string">"child"</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> threadPool1<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//子任务</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> threadPool1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> cf1<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+如上代码块所示，doGet方法第三行通过`supplyAsync`向`threadPool1`请求线程，并且内部子任务又向threadPool1请求线程。threadPool1大小为<span class="token number">10</span>，当同一时刻有<span class="token number">10</span>个请求到达，则 `threadPool1`被打满，子任务请求线程时进入阻塞队列排队，但是父任务的完成又依赖于子任务，这时由于子任务得不到线程，父任务无法完成。主线程执行cf1<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span>进入阻塞状态，并且永远无法恢复。
+
+为了修复该问题，需要将父任务与子任务做线程池隔离，两个任务请求不同的线程池，避免循环依赖导致的阻塞。</code></pre>
+
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://gitee.com/jd-platform-opensource/asyncTool" >京东零售 &#x2F; asyncTool<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://gitee.com/jd-platform-opensource/asyncTool/commit/87dd12e449a52ddae683dd725f50c5f2b100800d" >线程不足导致卡死的问题<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://tech.meituan.com/2022/05/12/principles-and-practices-of-completablefuture.html" >CompletableFuture原理与实践-外卖商家端API的异步化<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2023/04/01/small-tips/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">small tips</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2023/03/05/%E5%8A%A8%E6%80%81%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%BB%84%E4%BB%B6%E8%90%BD%E5%9C%B0/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">动态线程池组件落地</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2025&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E6%9F%A5"><span class="nav-text">排查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%A0%86%E6%A0%88"><span class="nav-text">线程堆栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="nav-text">解决办法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

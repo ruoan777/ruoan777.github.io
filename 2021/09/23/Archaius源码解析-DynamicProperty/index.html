@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            Archaius源码解析-DynamicProperty |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Archaius源码解析-DynamicProperty</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv5</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-09-23 00:07:07
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Archaius/">Archaius</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h3 id="官网的定义"><a href="#官网的定义" class="headerlink" title="官网的定义"></a>官网的定义</h3><p>老规矩，看什么源码分析都不如直接看官方注释来的准确直接。</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">/**
+ * A cached configuration property value that is automatically
+ * updated when the config is changed.
+ * The object is fully thread safe, and access is very fast.
+ * (In fact, testing indicates that using a DynamicProperty is faster
+ * than fetching a System Property.)
+ * 
+ * This class is intended for those situations where the value of
+ * a property is fetched many times, and the value may be
+ * changed on-the-fly.
+ * If the property is being read only once, "normal" access methods
+ * should be used.
+ * If the property value is fixed, consider just caching the value
+ * in a variable.
+ * 
+ * Fetching the cached value is synchronized only on this property,
+ * so contention should be negligible.
+ * If even that level of overhead is too much for you,
+ * you should (a) think real hard about what you are doing, and
+ * (b) just cache the property value in a variable and be done
+ * with it.
+ * 
+ * IMPORTANT NOTE
+ * 
+ * DynamicProperty objects are not subject to normal garbage collection.
+ * They should be used only as a static value that lives for the
+ * lifetime of the program.
+ *
+ * @author slanning 
+ */</span></code></pre>
+<p>翻译过来，是说:</p>
+<ol>
+<li>当配置更改时会自动更新缓存中该配置对应的数据。</li>
+<li>这个对象是线程安全的，并且访问速度很快。(测试表明，使用 <code>DynamicProperty</code> 比获取系统属性还要快)</li>
+<li>此类适用于那些属性值会被多次获取，且值可能会被即时更改的场景。 如果该属性仅被读取一次，则应使用 <code>normal</code> 访问方式，即如果属性值是固定的，请考虑仅将值缓存在变量中。 </li>
+<li>获取缓存值仅在此属性上同步，所以并发争抢冲突应该可以忽略不计。</li>
+<li><code>DynamicProperty</code> 对象不受常规垃圾收集的约束，应该仅仅将其用作 <code>static value</code>，即在程序整个生命期内有效的静态值。</li>
+</ol>
+<h3 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h3><p><code>DynamicProperty</code> 的源码有点绕，设计的有点精妙 (说的好像其他类设计的不精妙似的-。-)<br>在网上找到了一个例子，觉得适合作为深究 <code>DynamicProperty</code> 后面的机制之前的引子。原文链接在文末。</p>
+<pre class="language-java" data-language="java"><code class="language-java">    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test03</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 获取配置对象</span>
+        <span class="token class-name">AbstractConfiguration</span> config <span class="token operator">=</span> <span class="token class-name">ConfigurationManager</span><span class="token punctuation">.</span><span class="token function">getConfigInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 添加一个property</span>
+        config<span class="token punctuation">.</span><span class="token function">addProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"zzs"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token class-name">String</span> author <span class="token operator">=</span> config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>author<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// 更改property</span>
+        config<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"zzf"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>author<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token comment">//    运行以上方法，控制台打印内容：</span>
+<span class="token comment">//    zzs</span>
+<span class="token comment">//    zzs</span></code></pre>
+
+<pre class="language-java" data-language="java"><code class="language-java">    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test04</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 获取配置对象</span>
+        <span class="token class-name">AbstractConfiguration</span> config <span class="token operator">=</span> <span class="token class-name">ConfigurationManager</span><span class="token punctuation">.</span><span class="token function">getConfigInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 添加一个property</span>
+        config<span class="token punctuation">.</span><span class="token function">addProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"zzs"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// 更改property</span>
+        config<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"zzf"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token comment">//    运行以上方法，控制台打印内容：</span>
+<span class="token comment">//    zzs</span>
+<span class="token comment">//    zzf</span></code></pre>
+<p>但是上面的做法有个问题，我们都知道从 <code>ConcurrentCompositeConfiguration</code> 中获取 <code>property</code> 是比较麻烦的，因为我需要去遍历 <code>configList</code> ，以及进行参数的转换等。每次都这样拿，不大合理。</p>
+<p>于是，我增加了缓存来减少这部分的开销，当然，<code>property</code> 更改时我必须刷新缓存。</p>
+<pre class="language-java" data-language="java"><code class="language-java">    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test05</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 缓存</span>
+        <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span> cache <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ConcurrentHashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 获取配置对象</span>
+        <span class="token class-name">AbstractConfiguration</span> config <span class="token operator">=</span> <span class="token class-name">ConfigurationManager</span><span class="token punctuation">.</span><span class="token function">getConfigInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 添加一个property</span>
+        config<span class="token punctuation">.</span><span class="token function">addProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"zzs"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token class-name">String</span> value <span class="token operator">=</span> cache<span class="token punctuation">.</span><span class="token function">computeIfAbsent</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> x <span class="token operator">-></span> config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// 添加监听器监听property的更改</span>
+        config<span class="token punctuation">.</span><span class="token function">addConfigurationListener</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">ConfigurationListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">configurationChanged</span><span class="token punctuation">(</span><span class="token class-name">ConfigurationEvent</span> event<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// 删除property</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token class-name">AbstractConfiguration</span><span class="token punctuation">.</span><span class="token constant">EVENT_CLEAR_PROPERTY</span> <span class="token operator">==</span> event<span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    cache<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getPropertyName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">return</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                <span class="token comment">// 更新property</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token class-name">AbstractConfiguration</span><span class="token punctuation">.</span><span class="token constant">EVENT_SET_PROPERTY</span> <span class="token operator">==</span> event<span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> 
+                        <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>event<span class="token punctuation">.</span><span class="token function">isBeforeUpdate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    cache<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getPropertyName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token class-name">String</span><span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getPropertyValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">return</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// 更改property</span>
+        config<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"zzf"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>cache<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token comment">//    运行以上方法，控制台打印内容：</span>
+<span class="token comment">//    zzs</span>
+<span class="token comment">//    zzf</span></code></pre>
+
+<h3 id="一步一步接近真相"><a href="#一步一步接近真相" class="headerlink" title="一步一步接近真相"></a>一步一步接近真相</h3><blockquote>
+<p>看完了上面这个例子，再看看 <code>Archaius</code> 里面的 <code>DynamicProperty</code> 是怎么设计的。</p>
+</blockquote>
+<p>先从一个最常见的用法看起，我们一步一步debug进去</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> <span class="token class-name">DynamicIntProperty</span> dynamicProperties <span class="token operator">=</span> <span class="token class-name">DynamicPropertyFactory</span><span class="token punctuation">.</span><span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getIntProperty</span><span class="token punctuation">(</span><span class="token string">"error.log.tracker.read.size"</span><span class="token punctuation">,</span> <span class="token number">1024</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DynamicPropertyFactory</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token class-name">DynamicIntProperty</span> <span class="token function">getIntProperty</span><span class="token punctuation">(</span><span class="token class-name">String</span> propName<span class="token punctuation">,</span> <span class="token keyword">int</span> defaultValue<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token function">getIntProperty</span><span class="token punctuation">(</span>propName<span class="token punctuation">,</span> defaultValue<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">DynamicIntProperty</span> <span class="token function">getIntProperty</span><span class="token punctuation">(</span><span class="token class-name">String</span> propName<span class="token punctuation">,</span> <span class="token keyword">int</span> defaultValue<span class="token punctuation">,</span> <span class="token keyword">final</span> <span class="token class-name">Runnable</span> propertyChangeCallback<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">checkAndWarn</span><span class="token punctuation">(</span>propName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">DynamicIntProperty</span> property <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DynamicIntProperty</span><span class="token punctuation">(</span>propName<span class="token punctuation">,</span> defaultValue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">addCallback</span><span class="token punctuation">(</span>propertyChangeCallback<span class="token punctuation">,</span> property<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> property<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p>看看 <code>DynamicIntProperty</code> 是个啥。发现它里面很简单，基本就是 <code>getInteger</code> 方法，使得该类返回特定类型(<code>Integer</code>) 的动态 <code>properties</code></p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DynamicIntProperty</span> <span class="token keyword">extends</span> <span class="token class-name">PropertyWrapper</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Integer</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token class-name">DynamicIntProperty</span><span class="token punctuation">(</span><span class="token class-name">String</span> propName<span class="token punctuation">,</span> <span class="token keyword">int</span> defaultValue<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">super</span><span class="token punctuation">(</span>propName<span class="token punctuation">,</span> <span class="token class-name">Integer</span><span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>defaultValue<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> prop<span class="token punctuation">.</span><span class="token function">getInteger</span><span class="token punctuation">(</span>defaultValue<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">intValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token class-name">Integer</span> <span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p>我们关注 <code>prop.getInteger(defaultValue).intValue()</code> 这个方法。<br>发现 <code>prop</code> 的类型是 <code>DynamicProperty</code> ，终于要进到了我们本文要分析的方法。</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">abstract</span> <span class="token keyword">class</span> <span class="token class-name">PropertyWrapper</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">V</span><span class="token punctuation">></span></span> <span class="token keyword">implements</span> <span class="token class-name">Property</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">V</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">protected</span> <span class="token keyword">final</span> <span class="token class-name">DynamicProperty</span> prop<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="上面都是废话，-DynamicProperty-的核心代码分析在这里"><a href="#上面都是废话，-DynamicProperty-的核心代码分析在这里" class="headerlink" title="上面都是废话， DynamicProperty 的核心代码分析在这里"></a>上面都是废话， <code>DynamicProperty</code> 的核心代码分析在这里</h3><pre class="language-java" data-language="java"><code class="language-java">代码有删减，顺序有调整，只保留核心部分。
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">DynamicProperty</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token comment">//key</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> propName<span class="token punctuation">;</span>
+    <span class="token comment">//value</span>
+    <span class="token keyword">private</span> <span class="token class-name">String</span> stringValue <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token class-name">Integer</span> <span class="token function">getInteger</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IllegalArgumentException</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> integerValue<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">//这个parse是个啥？别着急，继续往下看</span>
+    <span class="token keyword">private</span> <span class="token class-name">CachedValue</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Integer</span><span class="token punctuation">></span></span> integerValue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CachedValue</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">Integer</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">protected</span> <span class="token class-name">Integer</span> <span class="token function">parse</span><span class="token punctuation">(</span><span class="token class-name">String</span> rep<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">NumberFormatException</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token class-name">Integer</span><span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>rep<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+    <span class="token comment">//这个内部抽象类有几个内部类来实现，该内部类的功能如其名字，它就是个cache,会将 DynamicProperty 持有的 value 缓存下来</span>
+    <span class="token keyword">private</span> <span class="token keyword">abstract</span> <span class="token keyword">class</span> <span class="token class-name">CachedValue</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">private</span> <span class="token keyword">volatile</span> <span class="token keyword">boolean</span> isCached<span class="token punctuation">;</span>
+        <span class="token keyword">private</span> <span class="token keyword">volatile</span> <span class="token class-name">T</span> value<span class="token punctuation">;</span>
+        <span class="token keyword">public</span> <span class="token class-name">CachedValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">final</span> <span class="token keyword">void</span> <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            isCached <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            exception <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+            value <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token keyword">public</span> <span class="token class-name">T</span> <span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IllegalArgumentException</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>isCached<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">synchronized</span> <span class="token punctuation">(</span>lock<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+                        value <span class="token operator">=</span> <span class="token punctuation">(</span>stringValue <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token keyword">null</span> <span class="token operator">:</span> <span class="token function">parse</span><span class="token punctuation">(</span>stringValue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        exception <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                        value <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+                        exception <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span> <span class="token keyword">finally</span> <span class="token punctuation">&#123;</span>
+                        isCached <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+                    <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>exception <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">throw</span> exception<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">return</span> value<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+
+        <span class="token comment">//内部类唯一的抽象方法，在 DynamicProperty 里面有六个实现类，分别是 cachedStringValue,integerValue,longValue,floatValue,doubleValue,classValue</span>
+        <span class="token keyword">protected</span> <span class="token keyword">abstract</span> <span class="token class-name">T</span> <span class="token function">parse</span><span class="token punctuation">(</span><span class="token class-name">String</span> rep<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="怎么做到updated-when-the-config-is-changed？"><a href="#怎么做到updated-when-the-config-is-changed？" class="headerlink" title="怎么做到updated when the config is changed？"></a>怎么做到updated when the config is changed？</h3><blockquote>
+<p>上面介绍了 <code>DynamicProperty</code> 的缓存 <code>value</code> 部分的源码，主要包括怎么读取一个 <code>key</code> ，获取它对应的配置。那么它怎么做到当配置的内容变更时，更新内存里面的值？<br>没错，依然是 <code>Listener</code> 机制。<br>还记得在 <code>DynamicPropertySupport</code> 里面的监听机制吗？</p>
+</blockquote>
+<p>那么，现在的监听机制的流程大概是这样。</p>
+<ol>
+<li><code>Configuration</code> 的某个实现类的 <code>setProperty()</code> 方法被调用。</li>
+<li><code>commons-configuration</code> 的事件机制被触发， <code>fireEvent</code> 方法被调用。</li>
+<li>之前通过 <code>DynamicPropertySupport</code> 的方法 <code>addConfigurationListener</code> 添加的监听器会被遍历到。</li>
+<li>这个遍历到的监听器的类型是 <code>ExpandedConfigurationListenerAdapter</code> ，其里面包装了一个 <code>PropertyListener</code>。</li>
+<li>则进入到了 <code>Archaius</code> 框架下的事件机制，相关的方法会被调用。</li>
+</ol>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">/**
+ * 通过添加一个listener来初始化DynamicProperty的动态更新能力
+ */</span>
+<span class="token keyword">static</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">initialize</span><span class="token punctuation">(</span><span class="token class-name">DynamicPropertySupport</span> config<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    dynamicPropertySupportImpl <span class="token operator">=</span> config<span class="token punctuation">;</span>
+    config<span class="token punctuation">.</span><span class="token function">addConfigurationListener</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">DynamicPropertyListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">updateAllProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">registerWithDynamicPropertySupport</span><span class="token punctuation">(</span><span class="token class-name">DynamicPropertySupport</span> config<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">initialize</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p>这里的 <code>DynamicPropertyListener</code> 就是 <code>PropertyListener</code> ，看到没，它被设置进来了，</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">static</span> <span class="token keyword">class</span> <span class="token class-name">DynamicPropertyListener</span> <span class="token keyword">implements</span> <span class="token class-name">PropertyListener</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">DynamicPropertyListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">configSourceLoaded</span><span class="token punctuation">(</span><span class="token class-name">Object</span> source<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">updateAllProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addProperty</span><span class="token punctuation">(</span><span class="token class-name">Object</span> source<span class="token punctuation">,</span> <span class="token class-name">String</span> name<span class="token punctuation">,</span> <span class="token class-name">Object</span> value<span class="token punctuation">,</span> <span class="token keyword">boolean</span> beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">updateProperty</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">validate</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token class-name">Object</span> source<span class="token punctuation">,</span> <span class="token class-name">String</span> name<span class="token punctuation">,</span> <span class="token class-name">Object</span> value<span class="token punctuation">,</span> <span class="token keyword">boolean</span> beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">updateProperty</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">validate</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">clearProperty</span><span class="token punctuation">(</span><span class="token class-name">Object</span> source<span class="token punctuation">,</span> <span class="token class-name">String</span> name<span class="token punctuation">,</span> <span class="token class-name">Object</span> value<span class="token punctuation">,</span> <span class="token keyword">boolean</span> beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">updateProperty</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">clear</span><span class="token punctuation">(</span><span class="token class-name">Object</span> source<span class="token punctuation">,</span> <span class="token keyword">boolean</span> beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">updateAllProperties</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p>这样，每次有 <code>property</code> 被更新，则它里面的 <code>updateProperty</code> (当然还有 <code>validate</code> 等方法，这里只是拿它举例子) 会被调用，然后一路刷新下去，把 <code>cache</code> 里面的 <code>value</code> 置为 <code>null</code> ,完成一次更新操作。</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a class="link"   target="_blank" rel="noopener" href="https://github.com/ZhangZiSheng001/eureka-demo/blob/master/Eureka%E8%AF%A6%E8%A7%A3%E7%B3%BB%E5%88%97(%E4%B8%89)--%E6%8E%A2%E7%B4%A2Eureka%E5%BC%BA%E5%A4%A7%E7%9A%84%E9%85%8D%E7%BD%AE%E4%BD%93%E7%B3%BB.md" >Eureka详解系列(三)–探索Eureka强大的配置体系<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/09/25/Archaius%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%E7%9A%84%E5%9F%BA%E7%A1%80/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Archaius源码解析-事件机制的基础</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/09/22/Archaius%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-DynamicPropertyFactory/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Archaius源码解析-DynamicPropertyFactory</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2025&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%98%E7%BD%91%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-text">官网的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E5%AD%90"><span class="nav-text">引子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E6%8E%A5%E8%BF%91%E7%9C%9F%E7%9B%B8"><span class="nav-text">一步一步接近真相</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E9%9D%A2%E9%83%BD%E6%98%AF%E5%BA%9F%E8%AF%9D%EF%BC%8C-DynamicProperty-%E7%9A%84%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%9C%A8%E8%BF%99%E9%87%8C"><span class="nav-text">上面都是废话， DynamicProperty 的核心代码分析在这里</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E5%81%9A%E5%88%B0updated-when-the-config-is-changed%EF%BC%9F"><span class="nav-text">怎么做到updated when the config is changed？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

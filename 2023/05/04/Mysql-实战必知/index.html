@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            Mysql 实战必知 |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Mysql 实战必知</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv5</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2023-05-04 23:56:20
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/mysql/">mysql</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p>-<img src="/images/mysql.png" alt="mysql架构图"></p>
+<h4 id="Mysql的两种日志-REDO-LOG-和-BINLOG"><a href="#Mysql的两种日志-REDO-LOG-和-BINLOG" class="headerlink" title="Mysql的两种日志-REDO LOG 和 BINLOG"></a>Mysql的两种日志-REDO LOG 和 BINLOG</h4><ul>
+<li><p>关于WAL，维基百科上的解释：In computer science, write-ahead logging (WAL) is a family of techniques for providing atomicity and durability (two of the ACID properties) in database systems. The changes are first recorded in the log, which must be written to stable storage, before the changes are written to the database. In a system using WAL, all modifications are written to a log before they are applied. Usually both redo and undo information is stored in the log. WAL：对数据库的改变必须先记录在日志里，然后同步到数据库中中。可以实现ACID中的原子性和持久性。 redo log：1）作为WAL的一种实现，在断电的情况下实现原子性和持久性；2）将对数据库操作的随机IO转换为顺序IO，以及通过组提交的方式提高mysql的IO效率。 参考文献： 1）<a class="link"   target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Write-ahead_logging" >https://en.wikipedia.org/wiki/Write-ahead_logging<i class="fas fa-external-link-alt"></i></a> 2）<a class="link"   target="_blank" rel="noopener" href="https://developer.aliyun.com/article/617776" >https://developer.aliyun.com/article/617776<i class="fas fa-external-link-alt"></i></a></p>
+</li>
+<li><p>快速问答：</p>
+</li>
+</ul>
+<ol>
+<li>redo log的概念是什么? 为什么会存在.</li>
+<li>什么是WAL(write-ahead log)机制, 好处是什么.</li>
+<li>redo log 为什么可以保证crash safe机制.</li>
+<li>binlog的概念是什么, 起到什么作用, 可以做crash safe吗? </li>
+<li>binlog和redolog的不同点有哪些? </li>
+<li>物理一致性和逻辑一直性各应该怎么理解? </li>
+<li>执行器和innoDB在执行update语句时候的流程是什么样的?</li>
+<li>如果数据库误操作, 如何执行数据恢复?</li>
+<li>什么是两阶段提交, 为什么需要两阶段提交, 两阶段提交怎么保证数据库中两份日志间的逻辑一致性(什么叫逻辑一致性)?</li>
+<li>如果不是两阶段提交, 先写redo log和先写bin log两种情况各会遇到什么问题?</li>
+</ol>
+<ul>
+<li>Answer</li>
+</ul>
+<ol>
+<li>redo log是重做日志。主要用于MySQL异常重启后的一种数据恢复手段，确保了数据的一致性。归根到底是MySQL为了实现WAL机制的一种手段。因为MySQL进行更新操作，为了能够快速响应，所以采用了异步写回磁盘的技术，写入内存后就返回。但是会存在crash后内存数据丢失的隐患，而redo log具备crash safe能力。</li>
+<li>WAL机制是写前日志，也就是MySQL更新操作后在真正把数据写入到磁盘前先记录日志。好处是不用每一次操作都实时把数据写盘，就算crash后也可以通过redo log重放恢复，所以能够实现快速响应SQL语句。</li>
+<li>因为redo log是每次更新操作完成后，就一定会写入的，如果写入失败，这说明此次操作失败，事务也不可能提交。redo log内部结构是基于页的，记录了这个页的字段值变化，只要crash后读取redo log进行重放就可以恢复数据。（因为redo log是循环写的，如果满了InnoDB就会执行真正写盘）</li>
+<li>bin log是归档日志，属于MySQL Server层的日志。可以起到全量备份的作用。当需要恢复数据时，可以取出某个时间范围内的bin log进行重放恢复。但是bin log不可以做crash safe，因为crash之前，bin log可能没有写入完全MySQL就挂了。所以需要配合redo log才可以进行crash safe。</li>
+<li>bin log是Server层，追加写，不会覆盖，记录了逻辑变化，是逻辑日志。redo log是存储引擎层，是InnoDB特有的。循环写，满了就覆盖从头写，记录的是基于页的物理变化，是物理日志，具备crash safe操作。</li>
+<li>前者是数据的一致性，后者是行为一致性。</li>
+<li>执行器在优化器选择了索引后，调用InnoDB读接口，读取要更新的行到内存中，执行SQL操作后，更新到内存，然后写redo log，写bin log，此时即为完成。后续InnoDB会在合适的时候把此次操作的结果写回到磁盘。</li>
+<li>数据库在某一天误操作，就可以找到距离误操作最近的时间节点前的bin log，重放到临时数据库里，然后选择当天误删的数据恢复到线上数据库。</li>
+<li>两阶段提交就是对于三步操作而言：1.prepare阶段 2. 写入bin log 3. commit<br>redo log在写入后，进入prepare状态，然后bin log写入后，进入commit状态，事务可以提交。<br>如果不用两阶段提交的话，可能会出现bin log写入之前，机器crash导致重启后redo log继续重放crash之前的操作，而当bin log后续需要作为备份恢复时，会出现数据不一致的情况。所以需要对redo log进行回滚。<br>如果是bin log commit之前crash，那么重启后，发现redo log是prepare状态且bin log完整（bin log写入成功后，redo log会有bin log的标记），就会自动commit，让存储引擎提交事务。</li>
+<li>先写redo log，crash后bin log备份恢复时少了一次更新，与当前数据不一致。先写bin log，crash后，由于redo log没写入，事务无效，所以后续bin log备份恢复时，数据不一致。</li>
+</ol>
+<h4 id="索引的常见类型"><a href="#索引的常见类型" class="headerlink" title="索引的常见类型"></a>索引的常见类型</h4><ul>
+<li>哈希表： 适用于等值查询的场景，不适合做区间查询</li>
+<li>有序数组：在等值查询和范围查询场景中的性能就都非常优秀，但是在更新数据时非常麻烦，所以只适用于静态存储引擎</li>
+<li>二叉搜索树：每个节点的左儿子小于父节点，父节点又小于右儿子。适合快速检索、更新操作</li>
+<li>N 叉树：查询过程访问尽量少的数据块，避免频繁与磁盘进行交互。</li>
+</ul>
+<p>索引是在存储引擎层实现的，其实现的核心就是基于这些数据模型的。</p>
+<h4 id="InnoDB-的索引模型"><a href="#InnoDB-的索引模型" class="headerlink" title="InnoDB 的索引模型"></a><code>InnoDB</code> 的索引模型</h4><p>表都是根据主键顺序以索引的形式存放的，这种存储方式的表称为<strong>索引组织表</strong>。每一个索引在 <code>InnoDB</code> 里面对应一棵 B+ 树。<br>根据叶子节点的内容，索引类型分为主键索引和非主键索引。<br>主键索引的叶子节点存的是整行数据。在 InnoDB 里，主键索引也被称为聚簇索引 (clustered index)。<br>非主键索引的叶子节点内容是主键的值。在 InnoDB 里，非主键索引也被称为二级索引 (secondary index)。</p>
+<p>select * from T where ID&#x3D;500，即主键查询方式，则只需要搜索 ID 这棵 B+ 树;<br>select * from T where k&#x3D;5，即普通索引查询方式，则需要先搜索 k 索引 树，得到 ID 的值为 500，再到 ID 索引树搜索一次。这个过程称为回表。<br>基于非主键索引的查询需要多扫描一棵索引树。因此，我们在应用中应该尽量使用主键查询。</p>
+<p>哪些场景下应该使用自增主键，而哪些场景下不应该?</p>
+<blockquote>
+<p>比如身份证号的场景，那么身份证就不适合用作主键，因为二级索引的叶子节点上需要存储主键的值，如果用身份证号做主键，那么每个二级索引的叶子节点占用约 20 个字节，而如果用整型做主键，则只要 4 个字节。<br>有没有什么场景适合用业务字段直接做主键的呢？典型的 KV 场景，就可以使用业务字段作为自增主键，这种情况下，表中只有一个索引，且该索引为唯一索引。</p>
+</blockquote>
+<p>覆盖索引：select ID from T where k between 3 and 5。在这个查询里面，索引 k 已经“覆盖了”我们的查询需求，我们称为覆盖索引。</p>
+<blockquote>
+<p>由于覆盖索引可以减少树的搜索次数，显著提升查询性能，所以使用覆盖索引是一个常用的性能优化手段。</p>
+</blockquote>
+<p>最左前缀原则:<br>这个最左前缀可以是联合索引的最左 N 个字段，也可以是字符串索引的最左 M 个字符。<br>不只是索引的全部定义，只要满足最左前缀，就可以利用索引来加速检索.</p>
+<blockquote>
+<p>第一原则是，如果通过调整顺序，可以少维护一个索引，那么这个顺序往往就是需要优先考虑采用的。</p>
+</blockquote>
+<p>索引下推原则：</p>
+<blockquote>
+<p>MySQL 5.6 引入的索引下推优化(index condition pushdown)， 可以在索引遍历过程中，对索引中包含的字段先做判断，直接过滤掉不满足条件的记录，减少回表次数。</p>
+</blockquote>
+<h4 id="怎么减少行锁对性能对影响"><a href="#怎么减少行锁对性能对影响" class="headerlink" title="怎么减少行锁对性能对影响"></a>怎么减少行锁对性能对影响</h4><p>两阶段锁协议：在 InnoDB 事务中，行锁是在需要的时候才加上的，但并不是不需要了就立刻释放，而是要等到事务结束时才释放。这个就是两阶段锁协议。<br>死锁和死锁检测：</p>
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">mysql&gt;  show  variables like &#39;innodb_lock_wait_timeout&#39;;
++--------------------------+-------+
+| Variable_name            | Value |
++--------------------------+-------+
+| innodb_lock_wait_timeout | 50    |
++--------------------------+-------+
+1 row in set (0.03 sec)</code></pre>
+
+<pre class="language-mysql" data-language="mysql"><code class="language-mysql">mysql&gt;  show  variables like &#39;innodb_deadlock_detect&#39;;
++------------------------+-------+
+| Variable_name          | Value |
++------------------------+-------+
+| innodb_deadlock_detect | ON    |
++------------------------+-------+
+1 row in set (0.01 sec)</code></pre>
+<p>当进入到死锁状态后，有两种方式可以处理</p>
+<ul>
+<li>一种策略是，直接进入等待，直到超时；</li>
+<li>另一种策略是，发起死锁检测，发现死锁后，主动回滚死锁链条中的某一个事务，让其他事务得以继续执行。</li>
+</ul>
+<p>如果你的事务中需要锁多个行，要把最可能造成锁冲突、最可能影响并发度的锁的申请时机尽量往后放</p>
+<h4 id="唯一索引与普通索引的选择"><a href="#唯一索引与普通索引的选择" class="headerlink" title="唯一索引与普通索引的选择"></a>唯一索引与普通索引的选择</h4><h5 id="查询过程"><a href="#查询过程" class="headerlink" title="查询过程"></a>查询过程</h5><p>两种索引在面对查询过程时的表现相差不大，对于普通索引，查找到满足条件的第一个记录以后，还要看一下下一个记录，是否也符合查询条件。<br>对于唯一索引，因为索引已经定义了唯一性，那么只要查找到一个记录，就可以立即返回。<br>由于InnoDB 的数据是按数据页为单位来读写的，所以对于普通索引的查找下一个，一般这条记录已经在内存中了，所以计算平均性能差异的时候，这一步额外的操作可以忽略不计。</p>
+<h5 id="更新过程"><a href="#更新过程" class="headerlink" title="更新过程"></a>更新过程</h5><p>change buffer的概念：当需要更新一个数据的时候，如果这个数据在内存中则直接更新，如果不在，则先将更新操作缓存在change buffer中，在下一次查询需要访问数据页的时候，将数据页读取到缓存，然后执行change buffer中与这个数据页相关的操作，从而将变更的内容同步到数据页。</p>
+<h4 id="MYSQL-一些常用的性能优化技巧"><a href="#MYSQL-一些常用的性能优化技巧" class="headerlink" title="MYSQL 一些常用的性能优化技巧"></a>MYSQL 一些常用的性能优化技巧</h4><ul>
+<li>如果对字段做了函数计算，就用不上索引了，这是 <code>MySQL</code> 的规定。对索引字段做函数操作，可能会破坏索引值的有序性，因此优化器就决定放弃走树搜索功能。</li>
+<li>注意Mysql的隐式类型转换，可能会导致索引失效。<ul>
+<li><code>select * from tradelog where tradeid=110717</code>; (tradeid 的字段类型是 varchar(32)，而输入的参数却是整型，所以需要做类型转换。)</li>
+</ul>
+</li>
+</ul>
+<h4 id="快照在MVCC里面是怎么工作的？"><a href="#快照在MVCC里面是怎么工作的？" class="headerlink" title="快照在MVCC里面是怎么工作的？"></a>快照在MVCC里面是怎么工作的？</h4><p>Multiversion Concurrency Control，简称MVCC。多版本并发控制。</p>
+<ol>
+<li>什么是视图数组？<ul>
+<li>InnoDB 为每个事务构造了一个数组，用来保存这个事务启动瞬间，当前正在“活跃”的所有事务 ID。“活跃”指的就是，启动了但还没提交。</li>
+</ul>
+</li>
+<li>视图数组和事务id分别是在什么时候创建的？<ul>
+<li>假设T1时刻start transaction ，T2时刻执行一条DML，T3时刻执行一条查询语句</li>
+<li>那么事务ID是在T2时刻创建的，而一致性视图与视图数组是在T3时刻创建的</li>
+<li>结论：视图数组是在事务需要一致性视图的时候才创建的。而事务的id是事务在执行第一条DML语句的时候创建的。</li>
+</ul>
+</li>
+<li>关于高水位与低水位<ul>
+<li>数组里面事务 ID 的最小值记为低水位，当前系统里面已经创建过的事务 ID 的最大值加 1 记为高水位。</li>
+<li>注意，注意此处低水位和高水位的区别。 低水位：数组内事务ID最小值。 高水位：当前系统已经创建的事务id的最大值+1（并不是数组内的最大） 低水位是【数组内】 高水位【系统内】</li>
+<li>视图数组中为什么有比自己小的，比自己大的，甚至有不连续的，原因具体如下：<ul>
+<li>对于视图数组中比自己小的transaction id事务，说明人家在T2时刻之前就已经申请完事务id了，只不过人家执行的比较久，T3时刻之后还没执行完成，因此就会存在小于自己的transaction id，简单来说就是来的比自己早，执行的又比较久。 </li>
+<li>对于视图数组中比自己大的transaction id事务，说明人家是在T2到T3之间创建的事务id，你T2时刻执行DML，此时可能很多别的事务进来了，由于事务id的申请是严格递增，所以他们的id比你大，你T3执行（生成视图数组）的时候就会看到它们。 </li>
+<li>视图数组还可能是不连续的，这很容易理解，很可能存在一些申请事务id比较早的但执行比较久的，同时存在一些申请没那么早但执行很快的事务，这样中间就会有一些执行完不再活跃的事务，不会被记录到视图数组</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>附一个简单的例子:<br>视图是在事务第一个查询语句才产生的。<br>举个例子：<br>begin<br>    update A<br>    update B<br>    select C<br>commit<br>这个时候事务id是在update A开始时申请的，假设为95；<br>在update A到select C之间会有新的事务开始，假设有3个事务开始了，事务id分别为96，97，98，事务96是个短事务，在创建一致性视图时可能已经提交了，所以在执行select C的时候创建视图数组就为[95，97，98]。<br>高水位为99，低水位为95。<br>当前事务可以看到&lt;&#x3D;95的提交，96的提交也能看到，而看不到97，大于98事务的提交。</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzUxNTQyOTIxNA==&mid=2247484041&idx=1&sn=76d3bf1772f9e3c796ad3d8a089220fa&chksm=f9b784b8cec00dae3d52318f6cb2bdee39ad975bf79469b72a499ceca1c5d57db5cbbef914ea&token=2025456560&lang=zh_CN#rd" >MySQL索引那些事<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/6844904073955639304" >联合索引在B+树上的存储结构及数据查找方式<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://developer.aliyun.com/article/617776" >[图解MySQL]MySQL组提交(group commit)<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://heapdump.cn/article/3890459" >3000帧动画图解MySQL为什么需要binlog、redo log和undo log<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/finalkof1983/article/details/88063328" >mysql锁系列之MDL元数据锁之一<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2023/06/03/%E5%8F%8D%E7%88%AC%E8%99%AB%E7%B3%BB%E7%BB%9F-%E9%AA%8C%E8%AF%81%E7%A0%81%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">反爬虫系统-验证码交互流程</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2023/04/01/small-tips/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">small tips</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2025&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Mysql%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%97%A5%E5%BF%97-REDO-LOG-%E5%92%8C-BINLOG"><span class="nav-text">Mysql的两种日志-REDO LOG 和 BINLOG</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E5%B8%B8%E8%A7%81%E7%B1%BB%E5%9E%8B"><span class="nav-text">索引的常见类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InnoDB-%E7%9A%84%E7%B4%A2%E5%BC%95%E6%A8%A1%E5%9E%8B"><span class="nav-text">InnoDB 的索引模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E5%87%8F%E5%B0%91%E8%A1%8C%E9%94%81%E5%AF%B9%E6%80%A7%E8%83%BD%E5%AF%B9%E5%BD%B1%E5%93%8D"><span class="nav-text">怎么减少行锁对性能对影响</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%94%AF%E4%B8%80%E7%B4%A2%E5%BC%95%E4%B8%8E%E6%99%AE%E9%80%9A%E7%B4%A2%E5%BC%95%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-text">唯一索引与普通索引的选择</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E8%BF%87%E7%A8%8B"><span class="nav-text">查询过程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E8%BF%87%E7%A8%8B"><span class="nav-text">更新过程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MYSQL-%E4%B8%80%E4%BA%9B%E5%B8%B8%E7%94%A8%E7%9A%84%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7"><span class="nav-text">MYSQL 一些常用的性能优化技巧</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BF%AB%E7%85%A7%E5%9C%A8MVCC%E9%87%8C%E9%9D%A2%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F"><span class="nav-text">快照在MVCC里面是怎么工作的？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

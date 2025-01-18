@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            Java并发机制-底层实现原理 |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Java并发机制-底层实现原理</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv5</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-12-21 22:45:21
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>又把这个话题拾起来了，这个话题在<code>java</code>里面，基本绕不开两个关键字 <code>volatile</code> ,<code>synchronized</code>，尤其是这两后面可以衍生出更多对锁的讨论，咱就是说，YYDS</p>
+</blockquote>
+<h3 id="前言-从一个知乎问题说起"><a href="#前言-从一个知乎问题说起" class="headerlink" title="前言-从一个知乎问题说起"></a>前言-从一个知乎问题说起</h3><p>今天刷知乎的时候看到一个有趣的问题：<a class="link"   target="_blank" rel="noopener" href="https://www.zhihu.com/question/63120810" >java多线程在单核CPU上，还是需要volatile synchronized吗？<i class="fas fa-external-link-alt"></i></a><br>原问题是这样的：  </p>
+<pre class="language-none"><code class="language-none">假设单核CPU的情况下。（即高速缓存都是一样的）
+一个变量a被线程A和线程B共享，A、B线程同时做a++操作。CPU切换时间片实际还是顺序操作，会有问题吗？如何理解？
+一个变量a被线程A和线程B共享，A写，B读，会出现B读不到最新的值吗？
+应该如何解释清楚以及如何证明（官方文档等）？</code></pre>
+
+
+<p>先说答案(上文链接答主：ETIN)：  </p>
+<p><img src="/images/single_cpu.png" alt="Java内存模型">  </p>
+<p>这个问题不由得又勾起了我的回忆，把书翻开，再整理下<code>volatile</code> ,<code>synchronized</code>的相关知识吧～  </p>
+<h3 id="volatile的定义及实现原理"><a href="#volatile的定义及实现原理" class="headerlink" title="volatile的定义及实现原理"></a><code>volatile</code>的定义及实现原理</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>Java编程语言允许线程访问共享变量，为了确保共享变量能被准确和一致地更新，线程应该确保通过排它锁单独获得这个变量，如果一个变量被声明为了<code>volatile</code>，则Java线程内存模型确保所有线程看到<br>的这个变量的值是一致的。<br><code>volatile</code> 有两大功能：</p>
+<ul>
+<li><strong>保证可见性</strong></li>
+<li><strong>保证有序性</strong><br>下面就针对这两个功能，讲一讲其大概的原理。</li>
+</ul>
+<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><h5 id="可见性是怎么保证的？"><a href="#可见性是怎么保证的？" class="headerlink" title="可见性是怎么保证的？"></a>可见性是怎么保证的？</h5><p>具体来说，有<code>volatile</code>变量修饰的共享变量进行写操作的时候会多出来一行汇编代码</p>
+<pre class="language-java" data-language="java"><code class="language-java">lock</code></pre>
+<p>而Lock前缀(就是下一段提到的内存屏障)的指令在多核处理器下会引发两件事情：</p>
+<ol>
+<li>将当前处理器缓存行的数据写回系统内存；</li>
+<li>这个写回内存的操作会使在其它<code>CPU</code>里缓存了该内存地址的数据无效。</li>
+</ol>
+<ul>
+<li><p>具体来说，为了提高处理速度，<code>CPU</code>不直接和内存打交道(内存太慢啦)，而是先将内存的数据先读到高速缓存（L1，L2或其它）后再进行其它操作，但操作完之后不知道什么时候写会内存。<br>如果对声明了<code>volatile</code>的变量进行写操作，<code>JVM</code>会向<code>CPU</code>发送一条<code>Lock</code>前缀的指令，将这个变量所在的缓存行的数据写回到系统内存。</p>
+</li>
+<li><p>但是就算你写回到了系统内存，其它线程不知道还是不行啊，所以，在多处理器下，为了保证各个处理器的缓存是一致的，就会实现缓存一致性协议。<br>每个处理器通过嗅探在总线上传播的数据来检查自己缓存的数据是不是过期了，当处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置成无效状态，<br>这样当处理器需要对这个数据进行修改操作的时候，就会重新从系统内存中把数据读到处理器缓存中来。</p>
+</li>
+</ul>
+<h5 id="有序性是怎么保证的？"><a href="#有序性是怎么保证的？" class="headerlink" title="有序性是怎么保证的？"></a>有序性是怎么保证的？</h5><p>简单说明一下<code>volatile</code>是如何保证有序性，实现禁止指令重排优化的。<br>先了解一个概念，内存屏障(<code>Memory Barrier</code>）。<br>内存屏障，又称内存栅栏，是一个CPU指令，它的作用有两个</p>
+<ul>
+<li>保证特定操作的执行顺序</li>
+<li>保证某些变量的内存可见性（利用该特性实现<code>volatile</code>的内存可见性）<br>由于编译器和处理器都能执行指令重排优化。<br>如果在指令间插入一条<code>Memory Barrier</code>则会告诉编译器和<code>CPU</code>，不管什么指令都不能和这条<code>Memory Barrier</code>指令重排序，也就是说通过插入内存屏障禁止在内存屏障前后的指令执行重排序优化。<br><code>Memory Barrier</code>的另外一个作用是强制刷出各种<code>CPU</code>的缓存数据，因此任何CPU上的线程都能读取到这些数据的最新版本。<br>总之，<code>volatile</code>变量正是通过内存屏障(在编译器层面，就是上一段提到的<code>lock</code>代码)实现其在内存中的语义，即可见性和禁止重排优化。</li>
+</ul>
+<h4 id="volatile关键字的常见误区"><a href="#volatile关键字的常见误区" class="headerlink" title="volatile关键字的常见误区"></a><code>volatile</code>关键字的常见误区</h4><p>《<strong>深入理解JAVA虚拟机</strong>》提到：关于<code>volatile</code>变量的可见性，经常会被开发人员误解，他们会误以为下面的描述是正确的:”<code>volatile</code>变量对所有线程是立即可见的，对<code>volatile</code>变量的所有写操作都能立刻反映到<br>其它线程中。换句话说，<code>volatile</code>变量在各个线程中是一致的，所以基于<code>volatile</code>变量的运算在并发下是线程安全的。”<br>这句话的论据部分并没有错，但是结论不对。具体不举例子了，书上12.3.3节有例子。<br>它也同时提到了，这两种情况例外(即仍可以保证线程安全，不需要加 <code>synchronized</code>或锁)</p>
+<ul>
+<li>运算结果不依赖变量的当前值，或者能够确保只有单一的线程修改变量的值</li>
+<li>变量不需要与其它的状态变量共同参与不变约束</li>
+</ul>
+<h4 id="volatile和锁怎么抉择？"><a href="#volatile和锁怎么抉择？" class="headerlink" title="volatile和锁怎么抉择？"></a><code>volatile</code>和锁怎么抉择？</h4><p>一个原则：<code>volatile</code>变量读操作的性能消耗与普通变量几乎没有什么差别，但是写操作可能会慢一点，因为它需要在本地代码中插入许多内存屏障指令来保证处理器不会发生乱序执行。<br>不过大多数场景下，使用<code>volatile</code>的总开销仍然要比锁来得更低。</p>
+<h3 id="synchronized的定义及实现原理"><a href="#synchronized的定义及实现原理" class="headerlink" title="synchronized的定义及实现原理"></a><code>synchronized</code>的定义及实现原理</h3><p><code>synchronized</code>的三种应用方式<br><code>synchronized</code>关键字最主要有以下3种应用方式</p>
+<ul>
+<li>修饰实例方法，作用于当前实例加锁，进入同步代码前要获得当前实例的锁</li>
+<li>修饰静态方法，作用于当前类对象加锁，进入同步代码前要获得当前类对象的锁</li>
+<li>修饰代码块，指定加锁对象，对给定对象加锁，进入同步代码库前要获得给定对象的锁。</li>
+</ul>
+<p>上面这三种的传统用法，就不一一举例了，主要是看<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/javazejian/article/details/72828483" >这篇文章<i class="fas fa-external-link-alt"></i></a>又看到了这样的一种情形：</p>
+<h4 id="修饰实例方法"><a href="#修饰实例方法" class="headerlink" title="修饰实例方法"></a>修饰实例方法</h4><p>看这样一种特例吧</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AccountingSyncBad</span> <span class="token keyword">implements</span> <span class="token class-name">Runnable</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">static</span> <span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">increase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+        i<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> j<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>j<span class="token operator">&lt;</span><span class="token number">1000000</span><span class="token punctuation">;</span>j<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+            <span class="token function">increase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">InterruptedException</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">//new新实例</span>
+        <span class="token class-name">Thread</span> t1<span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">AccountingSyncBad</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//new新实例</span>
+        <span class="token class-name">Thread</span> t2<span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">AccountingSyncBad</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        t1<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        t2<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//join含义:当前线程A等待thread线程终止之后才能从thread.join()返回</span>
+        t1<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        t2<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<blockquote>
+<p>如果是一个线程 A 需要访问实例对象 <code>obj1</code> 的 <code>synchronized</code> 方法 f1(当前对象锁是<code>obj1</code>)，另一个线程 B 需要访问实例对象 <code>obj2</code> 的 <code>synchronized</code> 方法 f2(当前对象锁是<code>obj2</code>)，<br>这样是允许的，因为两个实例对象锁并不同相同，此时如果两个线程操作数据并非共享的，线程安全是有保障的，遗憾的是如果两个线程操作的是共享数据，那么线程安全就有可能无法保证了，上面的这一段代码就说明了这个问题。</p>
+</blockquote>
+<h4 id="Monitor对象"><a href="#Monitor对象" class="headerlink" title="Monitor对象"></a><code>Monitor</code>对象</h4><p><code>JVM</code>基于进入和退出<code>Monitor</code>对象来实现方法同步和代码块同步。<br>在次之前，需要先了解java里面的一个概念，对象头。这对了解 <code>synchronized</code> 的原理至关重要。<br><img src="/images/java_monitor.jpg" alt="java对象头"></p>
+<p><code>synchronized</code> 用的锁就存在java对象头里面，对象头里面具体存的信息如下表所示:(一般用2个字宽或者3个字宽来表示，一个字宽在32位虚拟机里面等于4个字节即32位)</p>
+<table>
+<thead>
+<tr>
+<th align="left">长度</th>
+<th align="left">内容</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">32&#x2F;64bit</td>
+<td align="left">Mark Word</td>
+<td align="left">存储对象的HashCode 或锁信息等</td>
+</tr>
+<tr>
+<td align="left">32&#x2F;64bit</td>
+<td align="left">Class MetaData Address</td>
+<td align="left">存储到对象类型数据的指针</td>
+</tr>
+<tr>
+<td align="left">32&#x2F;64bit</td>
+<td align="left">Array Length</td>
+<td align="left">存储数组的长度（如果当前对象是数组）</td>
+</tr>
+</tbody></table>
+<p>上面的结构中与<code>synchronized</code> 锁相关的数据主要在 <code>Mark Word</code> 中，下面重点关注它。<br>对于<code>synchronized</code>而言，<code>Mark Word</code>里面会存储一个指向互斥量的指针，该指针指向的是<code>monitor</code>对象（也称为管程或监视器锁）的起始地址</p>
+<table>
+<thead>
+<tr>
+<th align="left">锁状态</th>
+<th align="left">30bit</th>
+<th align="left">2bit&#x2F;锁标志位</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">重量级锁</td>
+<td align="left">指向互斥量(重量级锁)的指针</td>
+<td align="left">10</td>
+</tr>
+</tbody></table>
+<p>每个对象都存在着一个 <code>monitor</code> 与之关联，对象与其 <code>monitor</code> 之间的关系有存在多种实现方式，如 <code>monitor</code> 可以与对象一起创建销毁或当线程试图获取对象锁时自动生成，但当一个 <code>monitor</code> 被某个线程持有后，它便处于锁定状态。在Java虚拟机(<code>HotSpot</code>)中，<code>monitor</code>是由<code>ObjectMonitor</code>实现的，其主要数据结构如下（位于HotSpot虚拟机源码<code>ObjectMonitor.hpp</code>文件，C++实现的）</p>
+<pre class="language-c++" data-language="c++"><code class="language-c++">ObjectMonitor() &#123;
+    _header       &#x3D; NULL;
+    _count        &#x3D; 0; &#x2F;&#x2F;记录个数
+    _waiters      &#x3D; 0,
+    _recursions   &#x3D; 0;
+    _object       &#x3D; NULL;
+    _owner        &#x3D; NULL;
+    _WaitSet      &#x3D; NULL; &#x2F;&#x2F;处于wait状态的线程，会被加入到_WaitSet
+    _WaitSetLock  &#x3D; 0 ;
+    _Responsible  &#x3D; NULL ;
+    _succ         &#x3D; NULL ;
+    _cxq          &#x3D; NULL ;
+    FreeNext      &#x3D; NULL ;
+    _EntryList    &#x3D; NULL ; &#x2F;&#x2F;处于等待锁block状态的线程，会被加入到该列表
+    _SpinFreq     &#x3D; 0 ;
+    _SpinClock    &#x3D; 0 ;
+    OwnerIsThread &#x3D; 0 ;
+  &#125;</code></pre>
+
+<ul>
+<li><code>ObjectMonitor</code> 里面有两个队列，一个是 <code>_EntryList</code> ,另一个是 <code>_WaitSet</code>，用来存放<code>ObjectWaiter</code>对象(每个尝试获取锁的线程都会被封装成<code>ObjectWaiter</code>对象)；</li>
+<li>每个尝试获取该对象的线程都会进入这个<code>_EntryList</code>队列，如果该线程获取<code>monitor</code>对象成功，则<code>ObjectMonitor</code>的<code>owner</code>会被设置为当前线程，同时<code>count</code>加1；</li>
+<li>如果线程调用<code>wait()</code>方法，则该线程就会进入<code>_WaitSet</code>队列，同时释放当前持有的<code>monitor</code>对象，<code>owner</code>会被设置为<code>null</code>,同时<code>count</code>减1。</li>
+</ul>
+<h4 id="synchronized代码块实现原理"><a href="#synchronized代码块实现原理" class="headerlink" title="synchronized代码块实现原理"></a><code>synchronized</code>代码块实现原理</h4><ul>
+<li>使用的是<code>monitorenter</code> 和 <code>monitorexit</code> 指令；</li>
+<li>其中<code>monitorenter</code>指令指向同步代码块的开始位置，<code>monitorexit</code> 指令则指明同步代码块的结束位置；</li>
+<li>当执行到<code>monitorenter</code>指令，当前线程就会去尝试获取对象的<code>Monitor</code>对象的持有权；</li>
+<li>当执行到<code>monitorexit</code>指令，当前线程执行线程将释放 <code>monitor</code>(锁)并设置计数器值为0；</li>
+<li>注意，编译器会自动产生一个异常处理器，以确保<code>monitorexit</code>指令一定会被执行。</li>
+</ul>
+<h4 id="synchronized方法实现原理"><a href="#synchronized方法实现原理" class="headerlink" title="synchronized方法实现原理"></a><code>synchronized</code>方法实现原理</h4><p><code>synchronized</code>方法的实现原理与<code>synchronized</code>代码块的实现原理略有不同，它不是通过<code>monitorenter</code>指令和<code>monitorexit</code>指令来实现的，而是通过<br>方法常量池中的方法表结构(method_info Structure) 中的 <code>ACC_SYNCHRONIZED</code> 访问标志，来标识一个方法是否是同步方法，从而执行相应的同步调用。</p>
+<ul>
+<li>方法调用时，调用指令将会检查方法的 <code>ACC_SYNCHRONIZED</code> 访问标志是否被设置；</li>
+<li>如果设置了，执行线程将会持有monitor对象，然后走后续到持有释放流程。</li>
+</ul>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li>Java 并发编程的艺术</li>
+<li>深入理解Java虚拟机</li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://www.zhihu.com/question/63120810" >java多线程在单核CPU上，还是需要volatile synchronized吗？<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/javazejian/article/details/72772461" >全面理解Java内存模型(JMM)及volatile关键字<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/javazejian/article/details/72828483" >深入理解Java并发之synchronized实现原理<i class="fas fa-external-link-alt"></i></a></li>
+</ol>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/12/25/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Java内存模型</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/12/17/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%BC%80%E5%8F%91%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%20Spring%20AOP%20%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">记一次开发中遇到的 Spring AOP 失效场景</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2025&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80-%E4%BB%8E%E4%B8%80%E4%B8%AA%E7%9F%A5%E4%B9%8E%E9%97%AE%E9%A2%98%E8%AF%B4%E8%B5%B7"><span class="nav-text">前言-从一个知乎问题说起</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile%E7%9A%84%E5%AE%9A%E4%B9%89%E5%8F%8A%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">volatile的定义及实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%AF%E8%A7%81%E6%80%A7%E6%98%AF%E6%80%8E%E4%B9%88%E4%BF%9D%E8%AF%81%E7%9A%84%EF%BC%9F"><span class="nav-text">可见性是怎么保证的？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9C%89%E5%BA%8F%E6%80%A7%E6%98%AF%E6%80%8E%E4%B9%88%E4%BF%9D%E8%AF%81%E7%9A%84%EF%BC%9F"><span class="nav-text">有序性是怎么保证的？</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#volatile%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="nav-text">volatile关键字的常见误区</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#volatile%E5%92%8C%E9%94%81%E6%80%8E%E4%B9%88%E6%8A%89%E6%8B%A9%EF%BC%9F"><span class="nav-text">volatile和锁怎么抉择？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronized%E7%9A%84%E5%AE%9A%E4%B9%89%E5%8F%8A%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">synchronized的定义及实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E9%A5%B0%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95"><span class="nav-text">修饰实例方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Monitor%E5%AF%B9%E8%B1%A1"><span class="nav-text">Monitor对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#synchronized%E4%BB%A3%E7%A0%81%E5%9D%97%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">synchronized代码块实现原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#synchronized%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">synchronized方法实现原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            动态线程池组件落地 |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">动态线程池组件落地</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv5</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2023-03-05 13:36:25
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">线程池</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>有一段时间没有写文章了。<br>主要原因是年后的工作一直很忙，几乎天天加班到10点，甚至周末也要全天加班，实在没空更新blog。<br>部门年前发生一个一级的生产事故，某核心服务生产突发宕机，无法短时间恢复，影响了用户的正常访问。事后复盘下来，与线程池的不当使用存在一定的联系。<br>因此，部门开展了一系列高可用review，其中有一个重要part就是针对线程池进行专题分析。由于我之前研究过这个，于是自告奋勇把这个活揽到我头上。</p>
+<h4 id="调研"><a href="#调研" class="headerlink" title="调研"></a>调研</h4><p>对于线程池的使用，我认为主要分两块，一个是需要有一个机制，对线程池的运行状态进行监控，另一个就是要基于这些监控的结果，对线程池的核心参数进行合理的、便捷的调整。这两部分我们目前都是缺失的。<br>之前我写过一个文章，研究过一个开源的动态线程池组件<a class="link"   target="_blank" rel="noopener" href="https://github.com/longtai-cn/hippo4j" >Hippo-4J<i class="fas fa-external-link-alt"></i></a>，这次在此基础上又完整调研了一次，发现了另一个目前比较活跃的组件<a class="link"   target="_blank" rel="noopener" href="https://github.com/dromara/dynamic-tp" >Dynamic tp<i class="fas fa-external-link-alt"></i></a>。花了两天的时间完整研读了下其实现源码，发现实现比较轻量，也提供了多种SPI接口供使用方拓展，同时也有多维度的告警通知机制，非常适合我们的项目。</p>
+<h4 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h4><p>在准备引入并集成到公司的环境时，发现了一系列棘手的问题。</p>
+<ol>
+<li>开源项目对<code>Spring Boot</code>组件的要求是版本&gt;&#x3D; <code>2.x</code> ，然而事实是，组内的项目大部分是 <code>1.5.x</code> 版本。这时只有两个选择，一个是升级组内的<code>Spring Boot</code>版本，另一个是考虑降级开源组件的<code>Spring Boot</code>版本。路子一显然风险太大，因为我们的版本是写死在framework组件中的，要升级恐怕多个应用都会受影响，带来的改动量是无法估计的，这条路几乎走不通。考虑到我对<code>DynamicTp</code>源码很熟悉了，所以大胆一点，决定直接引入源码进行魔改，对源码<code>Spring Boot</code>版本依赖进行降级。</li>
+<li>引入源码魔改遇到了第二个问题，源码的核心功能【远程配置文件和本地线程池的参数绑定】是基于<code>Spring Boot</code> 2.x的 <code>org.springframework.boot.context.properties.bind.Binder</code>做的，那也就意味着这个功能得重新做。</li>
+<li>开源组件支持的配置中心基本囊括了主流的配置中心，包括<code>Nacos、Apollo、Zookeeper、Consul、Etcd、Polaris</code>，但遗憾，公司用的是自研的配置中心，所以这个得单独去支持。</li>
+<li>开源组件提供的通知告警组件，支持了企业微信、钉钉、飞书、邮件报警，但遗憾，公司用的IM软件也是自研的，这部分也得单独开发。</li>
+<li>另一个比较尴尬的问题是，配置中心发生参数变更后，会通知到每一个实例，那么每一个实例都会发出一条变更消息。这样当部署的机器非常多的时候，应用的owner会同时被多条变更信息进行了消息轰炸，用户体验会比较差，这也是需要优化的。</li>
+</ol>
+<h4 id="落地"><a href="#落地" class="headerlink" title="落地"></a>落地</h4><p>落地过程中，踩了一系列的踩坑，比如注入bean失败、动态配置无法生效、版本依赖冲突严重、和业务应用水土不服等等。<br>不过总算之前的源码没白读，遇到问题一步一步debug，都一一克服了。<br>这里提一个小细节吧，在测试阶段一切正常，发布到生产环境发现了一个让我啼笑皆非到情况，变更一次配置后，im软件会一次收到非常多的消息通知。<br>这个时候才突然想起来，配置的更新是按照实例来的，每一次变更，每一个实例都可以收到消息并进行参数变更，并发出<code>mq</code>消息。<br>所以为了避免对接入方进行消息轰炸，额外做了一个mq消息的压制功能。<br>具体做法是单独起一个服务，接收实例发出的mq消息，然后对消息的核心参数进行拼接，生成一个分布式的key，利用 <code>redis</code> 的 <code>setnx</code> 命令实现一把简易的分布式锁。<br>这样，只有一个实例的消息可以成功获取锁，继而发出im消息给到用户。</p>
+<h4 id="待扩展实现"><a href="#待扩展实现" class="headerlink" title="待扩展实现"></a>待扩展实现</h4><p>集团使用的配置中心，如何和dtp整合是个大麻烦，目前侵入源码的实现不太优雅，研究了 <code>SpringBoot</code> 的 <code>ApplicationContextInitializer</code> <code>机制，PropertySourceLocator</code> 机制等扩展点后，有了一些新的想法。<br>比如可以自行实现一个 <code>QconigApplicationContextInitializer</code> ，继承 <code>EnvironmentPostProcessor</code> 和 <code>ApplicationContextInitializer</code> , 将读取配置中心配置的工作放在这里面，在应用准备 <code>Environment</code> 的环节就将远程配置的文件内容读取到当前应用的上下文。<br>然后可能需要改造   <code>PropertiesBinder</code> 里面的方法，反正在这里已经可以读取到配置的内容了，可以使用类似于深拷贝的方式进行配置的绑定。</p>
+<h4 id="组件启动顺序"><a href="#组件启动顺序" class="headerlink" title="组件启动顺序"></a>组件启动顺序</h4><p><img src="/images/dynamictp7.png" alt="组件功能架构"></p>
+<p><img src="/images/dynamictp6.png" alt="组件启动顺序"></p>
+<h4 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h4><p><img src="/images/dynamictp8.png" alt="线程池参数变更通知"></p>
+<p><img src="/images/dynamictp9.png" alt="线程池运行告警"></p>
+<p>还有 <code>ClickHouse</code> 的日志记录，及 <code>Metrics</code> 监控埋点，这里因为要打的码太多，担心会泄露公司信息，就不贴截图了。</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://github.com/dromara/dynamic-tp" >Dynamic tp<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/7164283773318594597#heading-0" >这些不知道，别说你熟悉 Nacos，深度源码解析！<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/7105968458851942414" >这个队列的思路是真的好 MemorySafeLinkedBlockingQueue<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/7152369961120301069#heading-3" >这些不知道，别说你熟悉 Spring<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/7098299623759937543#heading-8" >一文读懂 Spring Environment<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/u014486725/article/details/119404113" >Spring中Environment的使用(封装工具类)<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45994575/article/details/124596081" >ApplicationContextInitializer的理解和使用<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/yhahaha_/article/details/88578431" >SpringBoot（三）使用EnvironmentPostProcessor接口加载外部配置文件<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/6857890075477278734" >Spring扩展-3-SmartLifecycle<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/7280429214608146490?utm_source=gold_browser_extension" >别再纠结线程池池大小、线程数量了，哪有什么固定公式 | 京东云技术团队<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/yangyongjie/p/15839713.html#!comments" >Netty时间轮-HashedWheelTimer<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2023/03/18/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%AD%BB%E9%94%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">记一次线程池死锁问题排查</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/11/06/Java%E4%B8%AD%E6%96%B9%E6%B3%95%E5%AD%97%E6%AE%B5%E5%90%8D%E7%9A%84%E6%9C%80%E5%A4%A7%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Java中方法和字段名的最大长度限制</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2025&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E7%A0%94"><span class="nav-text">调研</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%95%E5%85%A5"><span class="nav-text">引入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%90%BD%E5%9C%B0"><span class="nav-text">落地</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%85%E6%89%A9%E5%B1%95%E5%AE%9E%E7%8E%B0"><span class="nav-text">待扩展实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8%E9%A1%BA%E5%BA%8F"><span class="nav-text">组件启动顺序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%88%E6%9E%9C"><span class="nav-text">效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            Archaius源码解析-DynamicPropertySupport |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Archaius源码解析-DynamicPropertySupport</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv5</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-09-21 18:34:51
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Archaius/">Archaius</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p><code>DynamicPropertySupport</code> 是 <code>Archaius</code> 可以支持动态属性的重要组成部分，其实现用到的适配器模式也是值得学习的。</p>
+</blockquote>
+<h3 id="一-两个监听器"><a href="#一-两个监听器" class="headerlink" title="一.两个监听器"></a>一.两个监听器</h3><p>首先需要明确一个前提，在 <code>Archaius</code> 里面有两个重要的监听器，一个是 <code>PropertyListener</code> ，另一个是 <code>ConfigurationListener</code></p>
+<ul>
+<li><code>PropertyListener</code> 属于 <code>com.netflix.config;</code></li>
+<li><code>ConfigurationListener</code> 属于 <code>org.apache.commons.configuration.event;</code></li>
+</ul>
+<p>也就是说，<code>ConfigurationListener </code>是 <code>commons-configuration</code> 包里的监听机制所用到的对象，它的定义是属于底层实现，即将 <code>commons-configuration</code> 视为提供基础配置的组件。<br>注意看下面到的监听器对象都是 <code>ConfigurationListener</code></p>
+<pre class="language-java" data-language="java"><div class="caption"><span>com.netflix.config.ConcurrentMapConfiguration</span></div><code class="language-java"> 
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token class-name">String</span> key<span class="token punctuation">,</span> <span class="token class-name">Object</span> value<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ValidationException</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>value <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">NullPointerException</span><span class="token punctuation">(</span><span class="token string">"Value for property "</span> <span class="token operator">+</span> key <span class="token operator">+</span> <span class="token string">" is null"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">fireEvent</span><span class="token punctuation">(</span><span class="token constant">EVENT_SET_PROPERTY</span><span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">setPropertyImpl</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fireEvent</span><span class="token punctuation">(</span><span class="token constant">EVENT_SET_PROPERTY</span><span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">fireEvent</span><span class="token punctuation">(</span><span class="token keyword">int</span> type<span class="token punctuation">,</span> <span class="token class-name">String</span> propName<span class="token punctuation">,</span> <span class="token class-name">Object</span> propValue<span class="token punctuation">,</span> <span class="token keyword">boolean</span> beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>listeners <span class="token operator">==</span> <span class="token keyword">null</span> <span class="token operator">||</span> listeners<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>        
+    <span class="token class-name">ConfigurationEvent</span> event <span class="token operator">=</span> <span class="token function">createEvent</span><span class="token punctuation">(</span>type<span class="token punctuation">,</span> propName<span class="token punctuation">,</span> propValue<span class="token punctuation">,</span> beforeUpdate<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">ConfigurationListener</span> l<span class="token operator">:</span> listeners<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>
+            l<span class="token punctuation">.</span><span class="token function">configurationChanged</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">ValidationException</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>beforeUpdate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">throw</span> e<span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+                logger<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Unexpected exception"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>                    
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Throwable</span> e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            logger<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Error firing configuration event"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+</code></pre>
+
+<h3 id="二-适配器"><a href="#二-适配器" class="headerlink" title="二.适配器"></a>二.适配器</h3><p>既然两个监听器所属的包和类型都不一样，那么 <code>Archaius</code> 是无法直接使用 <code>commons-configuration</code> 包里提供的监听机制的，这就需要存在一个适配器，我们的 <code>ExpandedConfigurationListenerAdapter</code> 于是就出场了。</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">/**
+ * &lt;p>An &lt;code>ExpandedConfigurationListenerAdapter&lt;/code> wraps an instance
+ * of &#123;@link PropertyListener&#125;.  When it receives the
+ * property modification notification from the Apache Configuration, 
+ * it translates the &#123;@link ConfigurationEvent&#125; into the corresponding 
+ * events for &#123;@link PropertyListener&#125;.
+ * &lt;p>
+ * It also has the capability to pause the event delivery through the &#123;@link #setPauseListener(boolean)&#125; API.
+ * &lt;p> This class is used as an adapter to attach a &#123;@link PropertyListener&#125; to a Configuration so that
+ * methods in the &#123;@link PropertyListener&#125; will be called when there is a change in the configuration.
+ *  
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ExpandedConfigurationListenerAdapter</span> <span class="token keyword">implements</span> <span class="token class-name">ConfigurationListener</span></code></pre>
+<p>上面的翻译过来，是说 <code>ExpandedConfigurationListenerAdapter</code> 是 <code>PropertyListener</code> 和 <code>ConfigurationEvent</code> 之间的桥梁。<br>这样一来，当一个事件发生后，调用链大概就是这样的</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token class-name">ConfigurationListener</span> <span class="token operator">-></span> <span class="token class-name">ExpandedConfigurationListenerAdapter</span> <span class="token operator">-></span> <span class="token class-name">PropertyListener</span></code></pre>
+<h3 id="三-为什么要搞这么个适配器，直接用-ConfigurationListener-不好吗？"><a href="#三-为什么要搞这么个适配器，直接用-ConfigurationListener-不好吗？" class="headerlink" title="三.为什么要搞这么个适配器，直接用 ConfigurationListener 不好吗？"></a>三.为什么要搞这么个适配器，直接用 <code>ConfigurationListener</code> 不好吗？</h3><p>假如有一天 netflix <code>Archaius</code> 不依赖 <code>commons-configuration</code> 而是依赖别的配置组件 如 <code>XXXConfiguration</code>。<br>那么动态属性这一块只需要提供一个对 <code>XXXConfiguration</code> 的支持实现类 <code>XXXConfigurationSupport</code> 即可，就能和 <code>XXXConfiguration</code> 完美桥接。<br>我想这就是上面问题的答案。</p>
+<h3 id="四-DynamicPropertySupport"><a href="#四-DynamicPropertySupport" class="headerlink" title="四.DynamicPropertySupport"></a>四.<code>DynamicPropertySupport</code></h3><p>有了前面的基础，我们的主角的出场就显得很自然了，它就是利用适配器包装了一下 <code>PropertyListener</code> ，使得它变成 <code>addConfigurationListener</code> 的入参。</p>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">DynamicPropertySupport</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">String</span> <span class="token function">getString</span><span class="token punctuation">(</span><span class="token class-name">String</span> propName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">void</span> <span class="token function">addConfigurationListener</span><span class="token punctuation">(</span><span class="token class-name">PropertyListener</span> expandedPropertyListener<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ConfigurationBackedDynamicPropertySupportImpl</span> <span class="token keyword">implements</span> <span class="token class-name">DynamicPropertySupport</span> <span class="token punctuation">&#123;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addConfigurationListener</span><span class="token punctuation">(</span><span class="token class-name">PropertyListener</span> expandedConfigListener<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">ExpandedConfigurationListenerAdapter</span> nl <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ExpandedConfigurationListenerAdapter</span><span class="token punctuation">(</span>expandedConfigListener<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        config<span class="token punctuation">.</span><span class="token function">addConfigurationListener</span><span class="token punctuation">(</span>nl<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token punctuation">&#125;</span></code></pre>
+<p>那么，现在的监听机制的流程大概是这样。</p>
+<ol>
+<li><code>Configuration</code> 的某个实现类的 <code>setProperty()</code> 方法被调用。</li>
+<li><code>commons-configuration</code> 的事件机制被触发， <code>fireEvent</code> 方法被调用。</li>
+<li>之前通过 <code>DynamicPropertySupport</code> 的方法 <code>addConfigurationListener</code> 添加的监听器会被遍历到。</li>
+<li>这个遍历到的监听器的类型是 <code>ExpandedConfigurationListenerAdapter</code> ，其里面包装了一个 <code>PropertyListener</code>。</li>
+<li>则进入到了 <code>Archaius</code> 框架下的事件机制，相关的方法会被调用。</li>
+</ol>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/xiaomujiang_dafangzi/article/details/109698419" >Netflix Archaius的动态属性支持-DynamicPropertySupport&amp;适配器模式<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/09/22/Archaius%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-DynamicPropertyFactory/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Archaius源码解析-DynamicPropertyFactory</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/09/20/Archaius%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-ConcurrentCompositeConfiguration/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Archaius源码解析-ConcurrentCompositeConfiguration</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2025&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80-%E4%B8%A4%E4%B8%AA%E7%9B%91%E5%90%AC%E5%99%A8"><span class="nav-text">一.两个监听器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C-%E9%80%82%E9%85%8D%E5%99%A8"><span class="nav-text">二.适配器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%90%9E%E8%BF%99%E4%B9%88%E4%B8%AA%E9%80%82%E9%85%8D%E5%99%A8%EF%BC%8C%E7%9B%B4%E6%8E%A5%E7%94%A8-ConfigurationListener-%E4%B8%8D%E5%A5%BD%E5%90%97%EF%BC%9F"><span class="nav-text">三.为什么要搞这么个适配器，直接用 ConfigurationListener 不好吗？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B-DynamicPropertySupport"><span class="nav-text">四.DynamicPropertySupport</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>

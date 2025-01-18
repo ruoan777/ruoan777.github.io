@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Don&#39;t let the time break our youth.">
+    <meta name="author" content="ruoan">
+    <meta name="google-site-verification" content="e1lVgxGDc-DiTEEtx13lgcEsxSLK5OgHyLMzxKIZXCA" />
+    
+    <title>
+        
+            Archaius源码解析-ConcurrentCompositeConfiguration |
+        
+        Ruoan Home
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"blog.ruoan777.xyz","root":"/","language":"en","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.jpg","favicon":"/images/avatar.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/intro.jpg","description":"Don't let the time break our youth."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ruoan" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Ruoan Home
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Archaius源码解析-ConcurrentCompositeConfiguration</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ruoan</span>
+                        
+                            <span class="author-label">Lv5</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-09-20 17:23:26
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Archaius/">Archaius</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>最先开始了解到<code>Archaius</code>，是在看公司中间件的源码过程中，发现有好多地方都用到了这个组件，一种常见的用法是：</p>
+</blockquote>
+<pre class="language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">DynamicIntProperty</span> numSeeds <span class="token operator">=</span> <span class="token class-name">DynamicPropertyFactory</span><span class="token punctuation">.</span><span class="token function">getInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getIntProperty</span><span class="token punctuation">(</span><span class="token string">"com.netflix.config.samples.SampleApp.SampleBean.numSeeds"</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<blockquote>
+<p>看到的次数多了，在一个无聊的周末，终于决定要点进去一探究竟了。<br><img src="/images/Archaius_Diagram.png" alt="aArchaius_Diagram"></p>
+</blockquote>
+<p><code>Archaius</code>是<code>Netflix</code>开源的一个配置管理库，主要解决的问题是多源、多层级、动态的配置管理问题。<br>开发过程中，我们有可能会有多种类型的配置源，比如项目<code>classpath</code>下的<code>config.properties</code>，比如来自JDBC数据库，比如来自远程URL，与此同时，这些多源的数据还存在一个层级的管理问题，最后需要面对的一个问题是，它们如何动态生效？<br>对此，<code>Archaius</code>给出了一个很好的解决方案。继续带着问题阅读源码。</p>
+<h4 id="总体设计"><a href="#总体设计" class="headerlink" title="总体设计"></a>总体设计</h4><p>上面提到了多数据源的配置，而<code>ConcurrentCompositeConfiguration</code>类就是<code>Archaius</code>实现多配置源配置，配置优先级定义的核心。<br>先阅读下其官方注释</p>
+<pre class="language-json" data-language="json"><code class="language-json">* This class maintains a hierarchy of configurations in a list structure. The order of the list stands for the descending
+* priority of the configurations when a property value is to be determined.
+* For example<span class="token punctuation">,</span> if you add Configuration1<span class="token punctuation">,</span> and then Configuration2<span class="token punctuation">,</span>
+* <span class="token punctuation">&#123;</span>@link #getProperty(String)<span class="token punctuation">&#125;</span> will return any properties defined by Configuration1.
+* Only if Configuration1 doesn't have the property<span class="token punctuation">,</span> then
+* Configuration2 will be checked. 
+* There are two internal configurations for properties that are programmatically set<span class="token operator">:</span>
+* 
+* Configuration to hold any property introduced by <span class="token punctuation">&#123;</span>@link #addProperty(String<span class="token punctuation">,</span> Object)<span class="token punctuation">&#125;</span> or <span class="token punctuation">&#123;</span>@link #setProperty(String<span class="token punctuation">,</span> Object)<span class="token punctuation">&#125;</span>
+* called directly on this class. This configuration will be called <span class="token string">"container configuration"</span> as it serves as the container of
+* such properties. By default<span class="token punctuation">,</span> this configuration remains at the last of the configurations list. It can be treated as 
+* a <span class="token string">"base line"</span> configuration that holds hard-coded parameters that can be overridden by any of other configurations added at runtime. 
+* You can replace this configuration by your own and change the position of the configuration in the list by calling
+* <span class="token punctuation">&#123;</span>@link #setContainerConfiguration(AbstractConfiguration<span class="token punctuation">,</span> String<span class="token punctuation">,</span> int)<span class="token punctuation">&#125;</span>. 
+
+* Configuration to hold properties that are programmatically set (using <span class="token punctuation">&#123;</span>@link #setOverrideProperty(String<span class="token punctuation">,</span> Object)<span class="token punctuation">&#125;</span>) to override values from any other 
+* configurations on the list. As contrast to container configuration<span class="token punctuation">,</span> this configuration is always consulted first in 
+* <span class="token punctuation">&#123;</span>@link #getProperty(String)<span class="token punctuation">&#125;</span>. </code></pre>
+<p>是说除了配置读取的优先级以外，它里面还持有两个特殊的<code>configuration</code>.</p>
+<ul>
+<li>一个是<code>container configuration</code>，即一个保底(<code>base line</code>)的配置对象。一般是<code>configList</code>的最后一个（但不一定必须是最后一个），我们往<code>ConcurrentCompositeConfiguration</code>里增删改property，实际操作的就是这个对象。</li>
+<li>另一个是<code>override configuration</code>，它正好和上面这个相反，它是优先级最高的配置对象。</li>
+</ul>
+<h4 id="核心：内部怎么实现的配置优先级的读取"><a href="#核心：内部怎么实现的配置优先级的读取" class="headerlink" title="核心：内部怎么实现的配置优先级的读取"></a>核心：内部怎么实现的配置优先级的读取</h4><pre class="language-java" data-language="java"><code class="language-java"><span class="token comment">/**
+ * Adds a new child configuration to this configuration with an optional
+ * name. The configuration will be added to the end of the list
+ * if &lt;em>container configuration&lt;/em> has been changed to new one or no longer at the end of 
+ * the list. Otherwise it will be added in front of the &lt;em>container configuration&lt;/em>.
+ *
+ * @param config the configuration to add (must not be &lt;b>null&lt;/b>)
+ * @param name the name of this configuration (can be &lt;b>null&lt;/b>)
+ */</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addConfiguration</span><span class="token punctuation">(</span><span class="token class-name">AbstractConfiguration</span> config<span class="token punctuation">,</span> <span class="token class-name">String</span> name<span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>containerConfigurationChanged<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">addConfigurationAtIndex</span><span class="token punctuation">(</span>config<span class="token punctuation">,</span> name<span class="token punctuation">,</span> configList<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">addConfigurationAtIndex</span><span class="token punctuation">(</span>config<span class="token punctuation">,</span> name<span class="token punctuation">,</span> configList<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>containerConfiguration<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addConfigurationAtIndex</span><span class="token punctuation">(</span><span class="token class-name">AbstractConfiguration</span> config<span class="token punctuation">,</span> <span class="token class-name">String</span> name<span class="token punctuation">,</span> <span class="token keyword">int</span> index<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">IndexOutOfBoundsException</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>configList<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">checkIndex</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        configList<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span> config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>name <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            namedConfigurations<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        config<span class="token punctuation">.</span><span class="token function">addConfigurationListener</span><span class="token punctuation">(</span>eventPropagater<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">fireEvent</span><span class="token punctuation">(</span><span class="token constant">EVENT_CONFIGURATION_SOURCE_CHANGED</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        logger<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span>config <span class="token operator">+</span> <span class="token string">" is not added as it already exits"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p>其实很简单，每次<code>addConfiguration</code>的时候，要么向<code>configList</code>列表的末尾插入元素(如果<code>container configuration</code>已经被重新设置了或者已经不在列表的末尾了)，<br>要么插在<code>container configuration</code>的前面一个位置。<br>注意上面的<code>config.addConfigurationListener(eventPropagater)</code>这一步给<code>Configuration</code>配置了一个监听器，这样它里面有属性后续发生变化时，就可以利用监听器的回调机制做很多事情了。</p>
+<h4 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h4><pre class="language-java" data-language="java"><code class="language-java">    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test01</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">final</span> <span class="token class-name">ConcurrentCompositeConfiguration</span> config <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ConcurrentCompositeConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+        config<span class="token punctuation">.</span><span class="token function">addConfigurationListener</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">ConfigurationListener</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">configurationChanged</span><span class="token punctuation">(</span><span class="token class-name">ConfigurationEvent</span> event<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token class-name">AbstractConfiguration</span><span class="token punctuation">.</span><span class="token constant">EVENT_ADD_PROPERTY</span> <span class="token operator">==</span> event<span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> 
+                        <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>event<span class="token punctuation">.</span><span class="token function">isBeforeUpdate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"add property："</span> <span class="token operator">+</span> event<span class="token punctuation">.</span><span class="token function">getPropertyName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"="</span> <span class="token operator">+</span> event<span class="token punctuation">.</span><span class="token function">getPropertyValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">return</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                <span class="token comment">// 删除property</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token class-name">AbstractConfiguration</span><span class="token punctuation">.</span><span class="token constant">EVENT_CLEAR_PROPERTY</span> <span class="token operator">==</span> event<span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"clear property："</span> <span class="token operator">+</span> event<span class="token punctuation">.</span><span class="token function">getPropertyName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">return</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                <span class="token comment">// 更新property</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token class-name">AbstractConfiguration</span><span class="token punctuation">.</span><span class="token constant">EVENT_SET_PROPERTY</span> <span class="token operator">==</span> event<span class="token punctuation">.</span><span class="token function">getType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> 
+                        <span class="token operator">&amp;&amp;</span> event<span class="token punctuation">.</span><span class="token function">isBeforeUpdate</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getPropertyName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getPropertyValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"update property："</span> 
+                    <span class="token operator">+</span> event<span class="token punctuation">.</span><span class="token function">getPropertyName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> 
+                    <span class="token operator">+</span> <span class="token string">":"</span> 
+                    <span class="token operator">+</span> config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getPropertyName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                    <span class="token operator">+</span> <span class="token string">"==>"</span>
+                    <span class="token operator">+</span> event<span class="token punctuation">.</span><span class="token function">getPropertyValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">return</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 添加property</span>
+        config<span class="token punctuation">.</span><span class="token function">addProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"aaa"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 获取property</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 更改property</span>
+        config<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"bbb"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 删除property</span>
+        config<span class="token punctuation">.</span><span class="token function">clearProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token comment">//    运行以上方法，控制台打印内容：</span>
+<span class="token comment">//    add property：author=aaa</span>
+<span class="token comment">//    aaa</span>
+<span class="token comment">//    update property：author:aaa==>bbb</span>
+<span class="token comment">//    clear property：author</span></code></pre>
+
+
+<pre class="language-java" data-language="java"><code class="language-java">    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test02</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 创建配置对象</span>
+        <span class="token class-name">ConcurrentCompositeConfiguration</span> config <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ConcurrentCompositeConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+        <span class="token comment">// 添加配置1</span>
+        <span class="token class-name">ConcurrentMapConfiguration</span> config1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ConcurrentMapConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        config1<span class="token punctuation">.</span><span class="token function">addProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"aaa"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        config<span class="token punctuation">.</span><span class="token function">addConfiguration</span><span class="token punctuation">(</span>config1<span class="token punctuation">,</span> <span class="token string">"CONFIG_01"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// 添加配置2</span>
+        <span class="token class-name">ConcurrentMapConfiguration</span> config2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ConcurrentMapConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        config2<span class="token punctuation">.</span><span class="token function">addProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"bbb"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        config<span class="token punctuation">.</span><span class="token function">addConfiguration</span><span class="token punctuation">(</span>config2<span class="token punctuation">,</span> <span class="token string">"CONFIG_02"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// 在默认的containerConfiguration中添加property</span>
+        config<span class="token punctuation">.</span><span class="token function">addProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"ccc"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// ============以下测试configList的优先级============</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 删除config1中的property</span>
+        config1<span class="token punctuation">.</span><span class="token function">clearProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">// 删除config2中的property</span>
+        config2<span class="token punctuation">.</span><span class="token function">clearProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// ============以下测试overrideProperties的优先级============</span>
+        <span class="token comment">// 添加overrideProperties的property</span>
+        config<span class="token punctuation">.</span><span class="token function">setOverrideProperty</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">,</span> <span class="token string">"ddd"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>err<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span><span class="token function">getString</span><span class="token punctuation">(</span><span class="token string">"author"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token comment">//    运行以上方法，控制台打印内容：</span>
+<span class="token comment">//    aaa</span>
+<span class="token comment">//    bbb</span>
+<span class="token comment">//    ccc</span>
+<span class="token comment">//    ddd</span>
+</code></pre>
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/09/21/Archaius%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-DynamicPropertySupport/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Archaius源码解析-DynamicPropertySupport</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/09/14/HashMap-resize%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">HashMap resize源码解析</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments">&nbsp;Comments</i>
+    </div>
+    
+
+        
+            
+    <div id="gitalk-container"></div>
+    <script 
+            src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+    <script >
+
+        function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+                __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+                Gitalk && new Gitalk({
+                    clientID: '06ea72516087490dbb77',
+                    clientSecret: 'f841cbb5a282c9e8c95b64d8e2a0eae95df6db90',
+                    repo: 'gitalk',
+                    owner: 'ruoan777',
+                    admin: ['ruoan777'],
+                    id: __gitalk__pathname,
+                    language: 'en'
+                }).render('gitalk-container');
+
+            } catch (e) {
+                window.Gitalk = null;
+            }
+        }
+
+        if ('false') {
+            const loadGitalkTimeout = setTimeout(() => {
+                loadGitalk();
+                clearTimeout(loadGitalkTimeout);
+            }, 1000);
+        } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+        }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2025&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ruoan</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">沪ICP备21000001号</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E8%AE%BE%E8%AE%A1"><span class="nav-text">总体设计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%EF%BC%9A%E5%86%85%E9%83%A8%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84%E9%85%8D%E7%BD%AE%E4%BC%98%E5%85%88%E7%BA%A7%E7%9A%84%E8%AF%BB%E5%8F%96"><span class="nav-text">核心：内部怎么实现的配置优先级的读取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-text">使用示例</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.3/source/js/toc.js"></script>
+    
+</div>
+
+
+
+</body>
+</html>
